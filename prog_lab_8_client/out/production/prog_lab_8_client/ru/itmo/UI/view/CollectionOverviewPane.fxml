@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1022.0" prefWidth="1618.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TableView prefHeight="700.0" prefWidth="1392.0">
+        <columns>
+          <TableColumn editable="false" prefWidth="75.0" text="id" />
+          <TableColumn prefWidth="75.0" text="Name" />
+            <TableColumn prefWidth="101.0" text="Coordinates">
+               <columns>
+                  <TableColumn prefWidth="75.0" text="x" />
+                  <TableColumn prefWidth="75.0" text="y" />
+               </columns>
+            </TableColumn>
+            <TableColumn prefWidth="120.0" text="Creation date" />
+            <TableColumn prefWidth="180.0" text="Number of participants" />
+            <TableColumn minWidth="0.0" prefWidth="119.0" text="Singles count" />
+            <TableColumn minWidth="0.0" prefWidth="112.0" text="Music genre" />
+            <TableColumn prefWidth="472.0" text="Front man">
+               <columns>
+                  <TableColumn prefWidth="75.0" text="Name" />
+                  <TableColumn prefWidth="75.0" text="Height" />
+                  <TableColumn prefWidth="89.0" text="Hair color" />
+                  <TableColumn prefWidth="98.0" text="Nationality" />
+                  <TableColumn prefWidth="204.0" text="Location">
+                     <columns>
+                        <TableColumn prefWidth="75.0" text="x" />
+                        <TableColumn prefWidth="75.0" text="y" />
+                        <TableColumn prefWidth="75.0" text="Name" />
+                     </columns>
+                  </TableColumn>
+               </columns>
+            </TableColumn>
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
