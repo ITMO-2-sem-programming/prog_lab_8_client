@@ -6,7 +6,6 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.effect.DropShadow?>
-<?import javafx.scene.effect.Glow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -64,9 +63,6 @@
          <font>
             <Font size="30.0" />
          </font>
-         <effect>
-            <Glow />
-         </effect>
       </Label>
    </children>
 </AnchorPane>

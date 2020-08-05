@@ -1,10 +1,14 @@
 package ru.itmo.UI.view;
 
 
-import javafx.scene.layout.HBox;
+import ru.itmo.UI.Main;
 
 public class LoginDialogController {
-    HBox box = new HBox();
+
+    Main main;
 
 
+    public void setMain(Main main) {
+        this.main = main;
+    }
 }

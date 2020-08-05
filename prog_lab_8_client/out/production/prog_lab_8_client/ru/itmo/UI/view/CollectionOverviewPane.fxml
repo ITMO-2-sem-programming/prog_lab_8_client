@@ -4,33 +4,33 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1022.0" prefWidth="1618.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1022.0" prefWidth="1618.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.itmo.UI.view.CollectionOverviewController">
    <children>
-      <TableView prefHeight="700.0" prefWidth="1392.0">
+      <TableView fx:id="collectionTable" prefHeight="700.0" prefWidth="1392.0">
         <columns>
-          <TableColumn editable="false" prefWidth="75.0" text="id" />
-          <TableColumn prefWidth="75.0" text="Name" />
+          <TableColumn fx:id="idColumn" editable="false" prefWidth="75.0" style="-fx-alignment: CENTER;" text="id" />
+          <TableColumn fx:id="nameColumn" prefWidth="75.0" style="-fx-alignment: CENTER;" text="Name" />
             <TableColumn prefWidth="101.0" text="Coordinates">
                <columns>
-                  <TableColumn prefWidth="75.0" text="x" />
-                  <TableColumn prefWidth="75.0" text="y" />
+                  <TableColumn fx:id="coordXColumn" prefWidth="75.0" style="-fx-alignment: CENTER;" text="x" />
+                  <TableColumn fx:id="coordYColumn" prefWidth="75.0" style="-fx-alignment: CENTER;" text="y" />
                </columns>
             </TableColumn>
-            <TableColumn prefWidth="120.0" text="Creation date" />
-            <TableColumn prefWidth="180.0" text="Number of participants" />
-            <TableColumn minWidth="0.0" prefWidth="119.0" text="Singles count" />
-            <TableColumn minWidth="0.0" prefWidth="112.0" text="Music genre" />
+            <TableColumn fx:id="creationDateColumn" prefWidth="120.0" style="-fx-alignment: CENTER;" text="Creation date" />
+            <TableColumn fx:id="numberOfParticipantsColumn" prefWidth="180.0" style="-fx-alignment: CENTER;" text="Number of participants" />
+            <TableColumn fx:id="singlesCountColumn" minWidth="0.0" prefWidth="119.0" style="-fx-alignment: CENTER;" text="Singles count" />
+            <TableColumn fx:id="musicGenreColumn" minWidth="0.0" prefWidth="112.0" style="-fx-alignment: CENTER;" text="Music genre" />
             <TableColumn prefWidth="472.0" text="Front man">
                <columns>
-                  <TableColumn prefWidth="75.0" text="Name" />
-                  <TableColumn prefWidth="75.0" text="Height" />
-                  <TableColumn prefWidth="89.0" text="Hair color" />
-                  <TableColumn prefWidth="98.0" text="Nationality" />
+                  <TableColumn fx:id="frontManNameColumn" prefWidth="75.0" style="-fx-alignment: CENTER;" text="Name" />
+                  <TableColumn fx:id="frontManHeightColumn" prefWidth="75.0" style="-fx-alignment: CENTER;" text="Height" />
+                  <TableColumn fx:id="frontManHeirColorColumn" prefWidth="89.0" style="-fx-alignment: CENTER;" text="Hair color" />
+                  <TableColumn fx:id="frontManNationalityColumn" prefWidth="98.0" style="-fx-alignment: CENTER;" text="Nationality" />
                   <TableColumn prefWidth="204.0" text="Location">
                      <columns>
-                        <TableColumn prefWidth="75.0" text="x" />
-                        <TableColumn prefWidth="75.0" text="y" />
-                        <TableColumn prefWidth="75.0" text="Name" />
+                        <TableColumn fx:id="frontManLocXColumn" prefWidth="75.0" style="-fx-alignment: CENTER;" text="x" />
+                        <TableColumn fx:id="frontManLocYColumn" prefWidth="75.0" style="-fx-alignment: CENTER;" text="y" />
+                        <TableColumn fx:id="frontManLocNameColumn" prefWidth="75.0" style="-fx-alignment: CENTER;" text="Name" />
                      </columns>
                   </TableColumn>
                </columns>
