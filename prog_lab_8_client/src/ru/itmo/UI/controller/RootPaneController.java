@@ -1,4 +1,4 @@
-package ru.itmo.UI.view;
+package ru.itmo.UI.controller;
 
 import ru.itmo.UI.Main;
 

@@ -9,10 +9,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import ru.itmo.UI.view.CollectionOverviewController;
-import ru.itmo.UI.view.LoginDialogController;
-import ru.itmo.UI.view.MusicBandEditController;
-import ru.itmo.UI.view.RootPaneController;
+import ru.itmo.UI.controller.CollectionOverviewController;
+import ru.itmo.UI.controller.LoginDialogController;
+import ru.itmo.UI.controller.MusicBandEditController;
+import ru.itmo.UI.controller.RootPaneController;
 import ru.itmo.core.common.classes.*;
 
 import java.io.IOException;
@@ -36,41 +36,74 @@ public class Main extends Application {
         collection.add(
                 new MusicBand(
                         1,
-                        "Beatles",
+                        "A",
                         new Coordinates(1,2),
-                        5,
+                        1,
+                        1,
+                        MusicGenre.PROGRESSIVE_ROCK,
+                        new Person(
+                                "A",
+                                190L,
+                                Color.WHITE,
+                                Country.GERMANY,
+                                new Location(1,
+                                        2,
+                                        "A"
+                                )
+                        )
+                ));
+
+//        Thread.sleep(200);
+
+        collection.add(
+                new MusicBand(
+                        2,
+                        "B",
+                        new Coordinates(3,4),
+                        2,
                         2,
                         MusicGenre.HIP_HOP,
                         new Person(
-                                "Van",
-                                166L,
-                                Color.WHITE,
-                                Country.GERMANY,
-                                new Location(2,
-                                        4,
-                                        "Berlin"
+                                "B",
+                                null,
+                                null,
+                                null,
+                                new Location(3,
+                                        2,
+                                        "B"
                                 )
                         )
                 ));
 
         collection.add(
                 new MusicBand(
-                        1,
-                        "Beatles",
-                        new Coordinates(1,2),
-                        5,
-                        2,
-                        MusicGenre.HIP_HOP,
+                        3,
+                        "C",
+                        new Coordinates(5,6),
+                        3,
+                        3,
+                        MusicGenre.POST_ROCK,
                         new Person(
-                                "Van",
+                                "C",
+                                195L,
+                                Color.GREEN,
                                 null,
-                                null,
-                                null,
-                                new Location(2,
-                                        4,
-                                        "Berlin"
+                                new Location(5,
+                                        6,
+                                        "C"
                                 )
                         )
+                ));
+
+        collection.add(
+                new MusicBand(
+                        4,
+                        "D",
+                        new Coordinates(7,8),
+                        4,
+                        4,
+                        MusicGenre.POST_PUNK,
+                        null
                 ));
     }
 
