@@ -20,27 +20,27 @@ public class EditMusicBandDialogController {
 
     Main main;
 
-    private Stage dialogStage;
+    private Stage editMusicBandDialogStage;
 
     private MusicBand mb
             =null;
-    private boolean submitButtonIsClicked
-            = false;
+//    private boolean submitButtonIsClicked
+//            = false;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
-    @FXML
-    private Button submitButton;
-
-    @FXML
-    private Button cancelButton;
+//    @FXML
+//    private Button submitButton;
+//
+//    @FXML
+//    private Button cancelButton;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
-    @FXML
-    private TextField idField;
+//    @FXML
+//    private TextField idField;
 
     @FXML
     private TextField nameField;
@@ -51,8 +51,8 @@ public class EditMusicBandDialogController {
     @FXML
     private TextField coordYField;
 
-    @FXML
-    private TextField creationDateField;
+//    @FXML
+//    private TextField creationDateField;
 
     @FXML
     private TextField numberOfParticipantsField;
@@ -100,71 +100,6 @@ public class EditMusicBandDialogController {
     }
 
 
-    @FXML
-    private void handleSubmitButton() {
-
-        try {
-            mb = createMusicBand();
-
-
-            //TODO посмотреть в сову ьфлукн как передавать Зукыт дальше
-//            Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
-//            infoAlert.initOwner(dialogStage);
-//            infoAlert.setContentText("Music bane was created successfully. Watch details in terminal.");
-//            infoAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-//            infoAlert.showAndWait();
-
-
-            System.out.println(mb); ///reeeeplaacee
-
-
-            submitButtonIsClicked = true;
-
-            dialogStage.close();
-            System.out.println("Stage is closed");
-
-//            Thread.sleep(4000);
-
-//            dialogStage.show(); // delete later
-
-        } catch (IllegalArgumentException e) {
-
-            mb = null;
-
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-
-            alert.initOwner(dialogStage);
-
-            alert.setTitle("Invalid fields");
-            alert.setHeaderText("Please correct invalid fields");
-            alert.setResizable(true);
-            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-            alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
-            alert.setContentText(e.getMessage());
-
-            alert.showAndWait();
-
-        }
-    }
-
-
-    @FXML
-    private void handleCancelButton() {
-        dialogStage.close();
-    }
-
-
-    @FXML
-    private void handleFrontManComboBox(ActionEvent event) {
-
-        if (frontManComboBox.getValue().equals(nullSymbol)) {
-            processNullFrontMan();
-        } else if (frontManComboBox.getValue().equals("not " + nullSymbol)) {
-            processNotNullFrontMan();
-        }
-    }
-
-
     private void initElements() {
         initComboBoxes();
 
@@ -206,6 +141,71 @@ public class EditMusicBandDialogController {
 
     private void initFrontManNationalityComboBox() {
         frontManNationalityComboBox.getItems().addAll(Country.values());
+    }
+
+
+    @FXML
+    private void handleSubmitButton() {
+
+        try {
+            mb = createMusicBand();
+
+
+            //TODO посмотреть в сову ьфлукн как передавать Зукыт дальше
+//            Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
+//            infoAlert.initOwner(dialogStage);
+//            infoAlert.setContentText("Music bane was created successfully. Watch details in terminal.");
+//            infoAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+//            infoAlert.showAndWait();
+
+
+            System.out.println(mb); ///reeeeplaacee
+
+
+//            submitButtonIsClicked = true;
+
+            editMusicBandDialogStage.close();
+            System.out.println("Stage is closed");
+
+//            Thread.sleep(4000);
+
+//            dialogStage.show(); // delete later
+
+        } catch (IllegalArgumentException e) {
+
+            mb = null;
+
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+
+            alert.initOwner(editMusicBandDialogStage);
+
+            alert.setTitle("Invalid fields");
+            alert.setHeaderText("Please correct invalid fields");
+            alert.setResizable(true);
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
+            alert.setContentText(e.getMessage());
+
+            alert.showAndWait();
+
+        }
+    }
+
+
+    @FXML
+    private void handleCancelButton() {
+        editMusicBandDialogStage.close();
+    }
+
+
+    @FXML
+    private void handleFrontManComboBox(ActionEvent event) {
+
+        if (frontManComboBox.getValue().equals(nullSymbol)) {
+            processNullFrontMan();
+        } else if (frontManComboBox.getValue().equals("not " + nullSymbol)) {
+            processNotNullFrontMan();
+        }
     }
 
 
@@ -399,10 +399,8 @@ public class EditMusicBandDialogController {
     }
 
 
-
-
-    public void setDialogStage(Stage dialogStage) {
-        this.dialogStage = dialogStage;
+    public void setEditMusicBandDialogStage(Stage editMusicBandDialogStage) {
+        this.editMusicBandDialogStage = editMusicBandDialogStage;
     }
 
     public void setMain(Main main) {

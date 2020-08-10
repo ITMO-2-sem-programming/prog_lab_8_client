@@ -124,13 +124,23 @@ public class Main extends Application {
 
         this.rootStage = rootStage;
 
+        try {
+
+            loadEditMusicBandDialogPane();
+            loadLoginDialogPane();
+            loadRootPane();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        loadCollectionOverviewPane();
 //        initRootPane();
 
 //        initLoginDialogPane();
-//        initCollectionOverviewPane();
 
-        initEditMusicBandDialogPane();
-        editMusicBandDialogController.setDialogStage(rootStage);
+        initCollectionOverviewPane();
+
+//        initEditMusicBandDialogPane();
+//        editMusicBandDialogController.setDialogStage(rootStage);
         rootStage.show();
     }
 
@@ -163,6 +173,8 @@ public class Main extends Application {
 
         try {
             loadCollectionOverviewPane();
+
+            collectionOverviewController.setCollectionOverviewStage(rootStage);
 
             Scene scene = new Scene(collectionOverviewPane);
 
@@ -268,26 +280,52 @@ public class Main extends Application {
 
 
 
+    // Getters and setters
 
     public Stage getRootStage() {
         return rootStage;
     }
 
 
-    private void setRootStage(Stage rootStage) {
-        this.rootStage = rootStage;
-    }
-
+    // Panes
 
     public BorderPane getRootPane() {
         return rootPane;
     }
 
-
-    private void setRootPane(BorderPane rootPane) {
-        this.rootPane = rootPane;
+    public AnchorPane getLoginDialogPane() {
+        return loginDialogPane;
     }
 
+    public AnchorPane getCollectionOverviewPane() {
+        return collectionOverviewPane;
+    }
+
+    public BorderPane getEditMusicBandDialogPane() {
+        return editMusicBandDialogPane;
+    }
+
+
+    // Controllers
+
+    public RootPaneController getRootPaneController() {
+        return rootPaneController;
+    }
+
+    public CollectionOverviewController getCollectionOverviewController() {
+        return collectionOverviewController;
+    }
+
+    public EditMusicBandDialogController getEditMusicBandDialogController() {
+        return editMusicBandDialogController;
+    }
+
+    public LoginDialogController getLoginDialogController() {
+        return loginDialogController;
+    }
+
+
+    // Other staff
 
     public ObservableList<MusicBand> getCollection() {
         return collection;

@@ -4,9 +4,10 @@ import javafx.beans.property.*;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import ru.itmo.UI.Main;
 import ru.itmo.UI.util.DateUtil;
 import ru.itmo.core.common.classes.Color;
@@ -20,13 +21,37 @@ import java.util.Date;
 public class CollectionOverviewController {
 
 
-    @FXML
-    private TextField filterField;
+    private Main main;
+
+    private Stage collectionOverviewStage;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
-    private String nullFieldSymbol = "null";
+    private String nullSymbol = "null";
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+    @FXML
+    private TextField filterField;
+
+
+    @FXML
+    private Button submitButton;
+
+    @FXML
+    private ComboBox<String> userCommandComboBox;
+
+    @FXML
+    private TextField argumentField;
+
+    @FXML
+    private Button createMusicBandButton;
+
+    @FXML
+    private TextArea resultArea;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -81,17 +106,36 @@ public class CollectionOverviewController {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+    // Some other fields
+
+    private boolean editMusicBandDialogStageIsCreated
+            = false;
+
+    private Stage createMBdDialogStage;
 
 //    @FXML
 //    private TableColumn<MusicBand, >
 
     ///
-    private Main main;
-    ///
 
+    ///
 
     @FXML
     private void initialize() {
+
+        initElements();
+
+
+    }
+
+
+    private void initElements() {
+
+        initCollectionTable();
+    }
+
+
+    private void initCollectionTable() {
 
         idColumn.setCellValueFactory(
                 cellData -> new SimpleIntegerProperty(cellData.getValue().getId()).asObject()
@@ -140,14 +184,14 @@ public class CollectionOverviewController {
         frontManNameColumn.setCellValueFactory(
                 cellData ->
                         (cellData.getValue().getFrontMan() != null)
-                            ? new SimpleObjectProperty<>(cellData.getValue().getFrontMan().getName())
-                            : new SimpleObjectProperty<>(nullFieldSymbol)
+                                ? new SimpleObjectProperty<>(cellData.getValue().getFrontMan().getName())
+                                : new SimpleObjectProperty<>(nullSymbol)
         );
 
         frontManNameColumn.setComparator(
                 (name, otherName) -> {
-                    if (name.equals(nullFieldSymbol)) return -1;
-                    else if (otherName.equals(nullFieldSymbol)) return 1;
+                    if (name.equals(nullSymbol)) return -1;
+                    else if (otherName.equals(nullSymbol)) return 1;
                     else return ((String) name).compareTo((String) otherName);
                 }
         );
@@ -158,17 +202,17 @@ public class CollectionOverviewController {
         frontManHeightColumn.setCellValueFactory(
                 cellData ->
                         (cellData.getValue().getFrontMan() != null)
-                            ?
+                                ?
                                 (cellData.getValue().getFrontMan().getHeight() != null)
-                                ? new SimpleObjectProperty<>(cellData.getValue().getFrontMan().getHeight())
-                                : new SimpleObjectProperty<>(nullFieldSymbol)
-                            : new SimpleObjectProperty<>(nullFieldSymbol)
+                                        ? new SimpleObjectProperty<>(cellData.getValue().getFrontMan().getHeight())
+                                        : new SimpleObjectProperty<>(nullSymbol)
+                                : new SimpleObjectProperty<>(nullSymbol)
         );
 
         frontManHeightColumn.setComparator(
                 (height, otherHeight) -> {
-                    if (height.equals(nullFieldSymbol)) return -1;
-                    else if (otherHeight.equals(nullFieldSymbol)) return 1;
+                    if (height.equals(nullSymbol)) return -1;
+                    else if (otherHeight.equals(nullSymbol)) return 1;
                     else return ((Long) height).compareTo((Long) otherHeight);
                 }
         );
@@ -179,17 +223,17 @@ public class CollectionOverviewController {
         frontManHeirColorColumn.setCellValueFactory(
                 cellData ->
                         (cellData.getValue().getFrontMan() != null)
-                            ?
+                                ?
                                 (cellData.getValue().getFrontMan().getHeirColor() != null)
-                                ? new SimpleObjectProperty<>(cellData.getValue().getFrontMan().getHeirColor())
-                                : new SimpleObjectProperty<>(nullFieldSymbol)
-                            : new SimpleObjectProperty<>(nullFieldSymbol)
+                                        ? new SimpleObjectProperty<>(cellData.getValue().getFrontMan().getHeirColor())
+                                        : new SimpleObjectProperty<>(nullSymbol)
+                                : new SimpleObjectProperty<>(nullSymbol)
         );
 
         frontManHeirColorColumn.setComparator(
                 (color, otherColor) -> {
-                    if (color.equals(nullFieldSymbol)) return -1;
-                    else if (otherColor.equals(nullFieldSymbol)) return 1;
+                    if (color.equals(nullSymbol)) return -1;
+                    else if (otherColor.equals(nullSymbol)) return 1;
                     else return ((Color) color).compareTo((Color) otherColor);
                 }
         );
@@ -200,17 +244,17 @@ public class CollectionOverviewController {
         frontManNationalityColumn.setCellValueFactory(
                 cellData ->
                         (cellData.getValue().getFrontMan() != null)
-                            ?
+                                ?
                                 (cellData.getValue().getFrontMan().getNationality() != null)
-                                    ? new SimpleObjectProperty<>(cellData.getValue().getFrontMan().getNationality())
-                                    : new SimpleObjectProperty<>(nullFieldSymbol)
-                            : new SimpleObjectProperty<>(nullFieldSymbol)
+                                        ? new SimpleObjectProperty<>(cellData.getValue().getFrontMan().getNationality())
+                                        : new SimpleObjectProperty<>(nullSymbol)
+                                : new SimpleObjectProperty<>(nullSymbol)
         );
 
         frontManNationalityColumn.setComparator(
                 (country, otherCountry) -> {
-                    if (country.equals(nullFieldSymbol)) return -1;
-                    else if (otherCountry.equals(nullFieldSymbol)) return 1;
+                    if (country.equals(nullSymbol)) return -1;
+                    else if (otherCountry.equals(nullSymbol)) return 1;
                     else return ((Country) country).compareTo((Country) otherCountry);
                 }
         );
@@ -221,14 +265,14 @@ public class CollectionOverviewController {
         frontManLocXColumn.setCellValueFactory(
                 cellData ->
                         (cellData.getValue().getFrontMan() != null)
-                            ? new SimpleObjectProperty<>(cellData.getValue().getFrontMan().getLocation().getX())
-                            : new SimpleObjectProperty<>(nullFieldSymbol)
+                                ? new SimpleObjectProperty<>(cellData.getValue().getFrontMan().getLocation().getX())
+                                : new SimpleObjectProperty<>(nullSymbol)
         );
 
         frontManLocXColumn.setComparator(
                 (locX, otherLocX) -> {
-                    if (locX.equals(nullFieldSymbol)) return -1;
-                    else if (otherLocX.equals(nullFieldSymbol)) return 1;
+                    if (locX.equals(nullSymbol)) return -1;
+                    else if (otherLocX.equals(nullSymbol)) return 1;
                     else return ((Integer) locX).compareTo((Integer) otherLocX);
                 }
         );
@@ -239,13 +283,13 @@ public class CollectionOverviewController {
         frontManLocYColumn.setCellValueFactory(
                 cellData -> (cellData.getValue().getFrontMan() != null)
                         ? new SimpleObjectProperty<>(cellData.getValue().getFrontMan().getLocation().getY())
-                        : new SimpleObjectProperty<>(nullFieldSymbol)
+                        : new SimpleObjectProperty<>(nullSymbol)
         );
 
         frontManLocYColumn.setComparator(
                 (locY, otherLocY) -> {
-                    if (locY.equals(nullFieldSymbol)) return -1;
-                    else if (otherLocY.equals(nullFieldSymbol)) return 1;
+                    if (locY.equals(nullSymbol)) return -1;
+                    else if (otherLocY.equals(nullSymbol)) return 1;
                     else return ((Integer) locY).compareTo((Integer) otherLocY);
                 }
         );
@@ -256,20 +300,79 @@ public class CollectionOverviewController {
         frontManLocNameColumn.setCellValueFactory(
                 cellData -> (cellData.getValue().getFrontMan() != null)
                         ? new SimpleObjectProperty<>(cellData.getValue().getFrontMan().getLocation().getName())
-                        : new SimpleObjectProperty<>(nullFieldSymbol)
+                        : new SimpleObjectProperty<>(nullSymbol)
         );
 
         frontManLocNameColumn.setComparator(
                 (name, otherName) -> {
-                    if (name.equals(nullFieldSymbol)) return -1;
-                    else if (otherName.equals(nullFieldSymbol)) return 1;
+                    if (name.equals(nullSymbol)) return -1;
+                    else if (otherName.equals(nullSymbol)) return 1;
                     else return ((String) name).compareTo((String) otherName);
                 }
         );
 
 //----------------------------------------------------------------------------------------------------------------------
 
+    }
+    
+    
+    private void fillCollectionTable() {
+        
+        connectTableViewToCollection();
 
+        enableFiltering();
+    }
+
+
+    @FXML
+    private void handleCreateMusicBandButton() {
+
+        if ( ! editMusicBandDialogStageIsCreated ) {
+            createMBdDialogStage = createEditMusicBandDialogStage();
+        }
+
+
+        createMBdDialogStage.showAndWait(); // -- everything sweet begins here
+
+        //TODO
+
+        // Our MusicBand :
+         System.out.println(main.getEditMusicBandDialogController().getMusicBand());
+    }
+
+
+    private Stage createEditMusicBandDialogStage() {
+
+
+        Stage createMBdDialogStage = new Stage();
+        createMBdDialogStage.setTitle("Create Music band");
+
+        createMBdDialogStage.initModality(Modality.WINDOW_MODAL);
+        createMBdDialogStage.initOwner(collectionOverviewStage);
+
+
+        createMBdDialogStage.setScene(
+                new Scene(main.getEditMusicBandDialogPane())
+        );
+
+
+        main.getEditMusicBandDialogController().setEditMusicBandDialogStage(createMBdDialogStage);
+
+
+        editMusicBandDialogStageIsCreated = true; // - important piece
+
+        return  createMBdDialogStage;
+
+    }
+
+
+    private void initUserCommandComboBox() {
+        //TODO
+    }
+
+
+    private void handleSubmitButton() {
+        //TODO
     }
 
 
@@ -281,27 +384,19 @@ public class CollectionOverviewController {
 
     }
 
-    public void setMain(Main main) {
-        this.main = main;
 
-        bindTableViewToCollection();
-
-        enableFiltering();
-    }
-
-
-    public void bindTableViewToCollection() {
+    private void connectTableViewToCollection() {
 
         collectionTable.setItems(main.getCollection());
 
     }
 
 
-    public void enableFiltering() {
+    private void enableFiltering() {
         FilteredList<MusicBand> collectionFiltered = new FilteredList<>(main.getCollection(), p -> true);
 
         filterField.textProperty().addListener(
-                (observable, oldValue, newValue) -> {
+                (observable, oldValue, newValue) ->
                     collectionFiltered.setPredicate(
                             musicBand -> {
                                 if (newValue == null || newValue.isEmpty()) return true;
@@ -325,7 +420,7 @@ public class CollectionOverviewController {
                                 if (musicBand.getGenre().toString().toLowerCase().contains(filterTextLowerCase)) return true;
 
 
-                                if (musicBand.getFrontMan() == null && nullFieldSymbol.toLowerCase().contains(filterTextLowerCase)) return true;
+                                if (musicBand.getFrontMan() == null && nullSymbol.toLowerCase().contains(filterTextLowerCase)) return true;
 
                                 if (musicBand.getFrontMan() != null) {
 
@@ -333,17 +428,17 @@ public class CollectionOverviewController {
                                     if (musicBand.getFrontMan().getName().toLowerCase().contains(filterTextLowerCase)) return true;
 
 
-                                    if (musicBand.getFrontMan().getHeight() == null && nullFieldSymbol.toLowerCase().contains(filterTextLowerCase)) return true;
+                                    if (musicBand.getFrontMan().getHeight() == null && nullSymbol.toLowerCase().contains(filterTextLowerCase)) return true;
 
                                     if (musicBand.getFrontMan().getHeight() != null && musicBand.getFrontMan().getHeight().toString().toLowerCase().contains(filterTextLowerCase)) return true;
 
 
-                                    if (musicBand.getFrontMan().getHeirColor() == null && nullFieldSymbol.toLowerCase().contains(filterTextLowerCase)) return true;
+                                    if (musicBand.getFrontMan().getHeirColor() == null && nullSymbol.toLowerCase().contains(filterTextLowerCase)) return true;
 
                                     if (musicBand.getFrontMan().getHeirColor() != null && musicBand.getFrontMan().getHeirColor().toString().toLowerCase().contains(filterTextLowerCase)) return true;
 
 
-                                    if (musicBand.getFrontMan().getNationality() == null && nullFieldSymbol.toLowerCase().contains(filterTextLowerCase)) return true;
+                                    if (musicBand.getFrontMan().getNationality() == null && nullSymbol.toLowerCase().contains(filterTextLowerCase)) return true;
 
                                     if (musicBand.getFrontMan().getNationality() != null && musicBand.getFrontMan().getNationality().toString().toLowerCase().contains(filterTextLowerCase)) return true;
 
@@ -362,9 +457,7 @@ public class CollectionOverviewController {
                                 return false;
 
                             }
-                    );
-                }
-
+                    )
         );
 
         SortedList<MusicBand> collectionSorted = new SortedList<>(collectionFiltered);
@@ -378,15 +471,28 @@ public class CollectionOverviewController {
     }
 
 
+    // Getters and setters
 
-    public String getNullFieldSymbol() {
-        return nullFieldSymbol;
+    public void setMain(Main main) {
+
+        this.main = main;
+
+        fillCollectionTable();
     }
 
-
-    public void setNullFieldSymbol(String nullFieldSymbol) {
-        this.nullFieldSymbol = nullFieldSymbol;
+    public void setCollectionOverviewStage(Stage collectionOverviewStage) {
+        this.collectionOverviewStage = collectionOverviewStage;
     }
 
+    public String getNullSymbol() {
+        return nullSymbol;
+    }
 
+    public void setNullSymbol(String nullSymbol) {
+        this.nullSymbol = nullSymbol;
+    }
+
+    private void setEditMusicBandDialogStageIsCreated(boolean editMusicBandDialogStageIsCreated) {
+        this.editMusicBandDialogStageIsCreated = editMusicBandDialogStageIsCreated;
+    }
 }
