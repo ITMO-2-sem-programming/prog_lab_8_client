@@ -11,7 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import ru.itmo.UI.controller.CollectionOverviewController;
 import ru.itmo.UI.controller.LoginDialogController;
-import ru.itmo.UI.controller.MusicBandEditController;
+import ru.itmo.UI.controller.EditMusicBandDialogController;
 import ru.itmo.UI.controller.RootPaneController;
 import ru.itmo.core.common.classes.*;
 
@@ -23,12 +23,18 @@ public class Main extends Application {
     ObservableList<MusicBand> collection
             = FXCollections.observableArrayList();
 
+
     private Stage rootStage;
     private BorderPane rootPane;
 
     private AnchorPane loginDialogPane;
     private AnchorPane collectionOverviewPane;
-    private AnchorPane musicBandEditPane;
+    private BorderPane editMusicBandDialogPane;
+
+    private RootPaneController rootPaneController;
+    private CollectionOverviewController collectionOverviewController;
+    private EditMusicBandDialogController editMusicBandDialogController;
+    private LoginDialogController loginDialogController;
 
 
     public Main() {
@@ -107,9 +113,11 @@ public class Main extends Application {
                 ));
     }
 
+
     public static void main(String[] args) {
         launch(args);
     }
+
 
     @Override
     public void start(Stage rootStage) {
@@ -119,7 +127,10 @@ public class Main extends Application {
 //        initRootPane();
 
 //        initLoginDialogPane();
-        initCollectionOverviewPane();
+//        initCollectionOverviewPane();
+
+        initEditMusicBandDialogPane();
+        editMusicBandDialogController.setDialogStage(rootStage);
         rootStage.show();
     }
 
@@ -137,7 +148,7 @@ public class Main extends Application {
 
             rootStage.setScene(scene);
 
-            rootStage.setResizable(false);
+            rootStage.setResizable(false); // Is this really needed ?
 
             rootStage.setTitle("Authorisation/Registration");
 
@@ -157,7 +168,7 @@ public class Main extends Application {
 
             rootStage.setScene(scene);
 
-            rootStage.setResizable(false);
+            rootStage.setResizable(false); // Is this really needed ?
 
             rootStage.setTitle("CollectionOverview");
 
@@ -184,6 +195,22 @@ public class Main extends Application {
     }
 
 
+    private void initEditMusicBandDialogPane() {
+
+        try {
+            loadEditMusicBandDialogPane();
+
+            Scene scene = new Scene(editMusicBandDialogPane);
+
+            rootStage.setScene(scene);
+
+            rootStage.setTitle("Create new music band.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     @Deprecated
     private Pane loadPane(String path) throws IOException {
         FXMLLoader loader = new FXMLLoader();
@@ -198,18 +225,20 @@ public class Main extends Application {
         loader.setLocation(Main.class.getResource("view/RootPane.fxml"));
         rootPane = loader.load();
 
-        ((RootPaneController) loader.getController()).setMain(this);
+        rootPaneController = loader.getController();
+        rootPaneController.setMain(this);
 
     }
 
 
-    private void loadMusicBandEditPane() throws IOException {
+    private void loadEditMusicBandDialogPane() throws IOException {
 
         FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("view/MusicBandEditPane.fxml"));
-        musicBandEditPane = loader.load();
+        loader.setLocation(Main.class.getResource("view/EditMusicBandDialogPane.fxml"));
+        editMusicBandDialogPane = loader.load();
 
-        ((MusicBandEditController) loader.getController()).setMain(this);
+        editMusicBandDialogController = loader.getController();
+        editMusicBandDialogController.setMain(this);
 
     }
 
@@ -220,7 +249,8 @@ public class Main extends Application {
         loader.setLocation(Main.class.getResource("view/LoginDialogPane.fxml"));
         loginDialogPane = loader.load();
 
-        ((LoginDialogController) loader.getController()).setMain(this);
+        loginDialogController = loader.getController();
+        loginDialogController.setMain(this);
 
     }
 
@@ -231,7 +261,8 @@ public class Main extends Application {
         loader.setLocation(Main.class.getResource("view/CollectionOverviewPane.fxml"));
         collectionOverviewPane = loader.load();
 
-        ((CollectionOverviewController) loader.getController()).setMain(this);
+        collectionOverviewController = loader.getController();
+        collectionOverviewController.setMain(this);
 
     }
 

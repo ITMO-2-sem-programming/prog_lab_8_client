@@ -1,9 +1,12 @@
 package ru.itmo.UI.controller;
 
 import javafx.beans.property.*;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import ru.itmo.UI.Main;
 import ru.itmo.UI.util.DateUtil;
 import ru.itmo.core.common.classes.Color;
@@ -17,7 +20,17 @@ import java.util.Date;
 public class CollectionOverviewController {
 
 
+    @FXML
+    private TextField filterField;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
     private String nullFieldSymbol = "null";
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
     @FXML
     private TableView<MusicBand> collectionTable;
 
@@ -65,6 +78,9 @@ public class CollectionOverviewController {
 
     @FXML
     private TableColumn<MusicBand, Object> frontManLocNameColumn;
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 //    @FXML
 //    private TableColumn<MusicBand, >
@@ -257,6 +273,7 @@ public class CollectionOverviewController {
     }
 
 
+    @Deprecated
     private int comparatorBooleanToInt(boolean condition) {
 
         if (condition) return 1;
@@ -267,8 +284,99 @@ public class CollectionOverviewController {
     public void setMain(Main main) {
         this.main = main;
 
-        collectionTable.setItems(main.getCollection());
+        bindTableViewToCollection();
+
+        enableFiltering();
     }
+
+
+    public void bindTableViewToCollection() {
+
+        collectionTable.setItems(main.getCollection());
+
+    }
+
+
+    public void enableFiltering() {
+        FilteredList<MusicBand> collectionFiltered = new FilteredList<>(main.getCollection(), p -> true);
+
+        filterField.textProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    collectionFiltered.setPredicate(
+                            musicBand -> {
+                                if (newValue == null || newValue.isEmpty()) return true;
+
+                                String filterTextLowerCase = newValue.toLowerCase();
+
+                                if (musicBand.getId().toString().toLowerCase().contains(filterTextLowerCase)) return true;
+
+                                if (musicBand.getName().toLowerCase().contains(filterTextLowerCase)) return true;
+
+                                if (String.valueOf(musicBand.getCoordinates().getX()).toLowerCase().contains(filterTextLowerCase)) return true;
+
+                                if (String.valueOf(musicBand.getCoordinates().getY()).toLowerCase().contains(filterTextLowerCase)) return true;
+
+                                if (musicBand.getCreationDate().toString().toLowerCase().contains(filterTextLowerCase)) return true;
+
+                                if (String.valueOf(musicBand.getNumberOfParticipants()).toLowerCase().contains(filterTextLowerCase)) return true;
+
+                                if (String.valueOf(musicBand.getSinglesCount()).toLowerCase().contains(filterTextLowerCase)) return true;
+
+                                if (musicBand.getGenre().toString().toLowerCase().contains(filterTextLowerCase)) return true;
+
+
+                                if (musicBand.getFrontMan() == null && nullFieldSymbol.toLowerCase().contains(filterTextLowerCase)) return true;
+
+                                if (musicBand.getFrontMan() != null) {
+
+
+                                    if (musicBand.getFrontMan().getName().toLowerCase().contains(filterTextLowerCase)) return true;
+
+
+                                    if (musicBand.getFrontMan().getHeight() == null && nullFieldSymbol.toLowerCase().contains(filterTextLowerCase)) return true;
+
+                                    if (musicBand.getFrontMan().getHeight() != null && musicBand.getFrontMan().getHeight().toString().toLowerCase().contains(filterTextLowerCase)) return true;
+
+
+                                    if (musicBand.getFrontMan().getHeirColor() == null && nullFieldSymbol.toLowerCase().contains(filterTextLowerCase)) return true;
+
+                                    if (musicBand.getFrontMan().getHeirColor() != null && musicBand.getFrontMan().getHeirColor().toString().toLowerCase().contains(filterTextLowerCase)) return true;
+
+
+                                    if (musicBand.getFrontMan().getNationality() == null && nullFieldSymbol.toLowerCase().contains(filterTextLowerCase)) return true;
+
+                                    if (musicBand.getFrontMan().getNationality() != null && musicBand.getFrontMan().getNationality().toString().toLowerCase().contains(filterTextLowerCase)) return true;
+
+
+                                    if (musicBand.getFrontMan().getLocation().getX().toString().toLowerCase().contains(filterTextLowerCase)) return true;
+
+
+                                    if (String.valueOf(musicBand.getFrontMan().getLocation().getY()).toLowerCase().contains(filterTextLowerCase)) return true;
+
+
+                                    if (musicBand.getFrontMan().getLocation().getName().toLowerCase().contains(filterTextLowerCase)) return true;
+
+                                }
+
+
+                                return false;
+
+                            }
+                    );
+                }
+
+        );
+
+        SortedList<MusicBand> collectionSorted = new SortedList<>(collectionFiltered);
+
+        // 4. Bind the SortedList comparator to the TableView comparator.
+        collectionSorted.comparatorProperty().bind(collectionTable.comparatorProperty());
+
+        // 5. Add sorted (and filtered) data to the table.
+        collectionTable.setItems(collectionSorted);
+
+    }
+
 
 
     public String getNullFieldSymbol() {
