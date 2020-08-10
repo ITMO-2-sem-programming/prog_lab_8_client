@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -240,7 +241,7 @@
                   <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
                </GridPane.margin>
             </ComboBox>
-            <ComboBox fx:id="frontManComboBox" onAction="#frontManComboBoxListener" prefWidth="150.0" GridPane.columnIndex="3" GridPane.rowIndex="17">
+            <ComboBox fx:id="frontManComboBox" onAction="#handleFrontManComboBox" prefWidth="150.0" GridPane.columnIndex="3" GridPane.rowIndex="17">
                <GridPane.margin>
                   <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
                </GridPane.margin>
@@ -255,11 +256,23 @@
       <VBox alignment="CENTER" prefWidth="581.0" BorderPane.alignment="CENTER">
          <children>
             <Separator prefWidth="200.0" />
-            <Button fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButton" text="Submit">
+            <HBox alignment="TOP_CENTER">
                <VBox.margin>
                   <Insets bottom="8.0" left="8.0" right="8.0" top="20.0" />
                </VBox.margin>
-            </Button>
+               <children>
+                  <Button fx:id="cancelButton" onAction="#handleCancelButton" mnemonicParsing="false" text="Cancel">
+                     <HBox.margin>
+                        <Insets right="12.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="submitButton" mnemonicParsing="false" onAction="#handleSubmitButton" text="Submit">
+                     <HBox.margin>
+                        <Insets left="12.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
          </children>
          <BorderPane.margin>
             <Insets bottom="8.0" top="15.0" />

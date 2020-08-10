@@ -14,7 +14,6 @@ import ru.itmo.core.common.classes.*;
 
 public class EditMusicBandDialogController {
 
-    //TODO frontManHeight
 
     private String nullSymbol
             = "null";
@@ -23,7 +22,8 @@ public class EditMusicBandDialogController {
 
     private Stage dialogStage;
 
-    private MusicBand musicBand;
+    private MusicBand mb
+            =null;
     private boolean submitButtonIsClicked
             = false;
 
@@ -32,6 +32,9 @@ public class EditMusicBandDialogController {
 
     @FXML
     private Button submitButton;
+
+    @FXML
+    private Button cancelButton;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -92,25 +95,25 @@ public class EditMusicBandDialogController {
     @FXML
     private void initialize() {
         //TODO
-        initComboBoxes();
+        initElements();
+        clearAllFields();
     }
 
 
     @FXML
-    private void handleSubmitButton() throws InterruptedException {
-
-        MusicBand mb;
+    private void handleSubmitButton() {
 
         try {
             mb = createMusicBand();
 
 
             //TODO посмотреть в сову ьфлукн как передавать Зукыт дальше
-            Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
-            infoAlert.initOwner(dialogStage);
-            infoAlert.setContentText("Music bane was created successfully. Watch details in terminal.");
-            infoAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+//            Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
+//            infoAlert.initOwner(dialogStage);
+//            infoAlert.setContentText("Music bane was created successfully. Watch details in terminal.");
+//            infoAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
 //            infoAlert.showAndWait();
+
 
             System.out.println(mb); ///reeeeplaacee
 
@@ -124,10 +127,14 @@ public class EditMusicBandDialogController {
 
 //            dialogStage.show(); // delete later
 
-
         } catch (IllegalArgumentException e) {
+
+            mb = null;
+
             Alert alert = new Alert(Alert.AlertType.ERROR);
+
             alert.initOwner(dialogStage);
+
             alert.setTitle("Invalid fields");
             alert.setHeaderText("Please correct invalid fields");
             alert.setResizable(true);
@@ -136,7 +143,69 @@ public class EditMusicBandDialogController {
             alert.setContentText(e.getMessage());
 
             alert.showAndWait();
+
         }
+    }
+
+
+    @FXML
+    private void handleCancelButton() {
+        dialogStage.close();
+    }
+
+
+    @FXML
+    private void handleFrontManComboBox(ActionEvent event) {
+
+        if (frontManComboBox.getValue().equals(nullSymbol)) {
+            processNullFrontMan();
+        } else if (frontManComboBox.getValue().equals("not " + nullSymbol)) {
+            processNotNullFrontMan();
+        }
+    }
+
+
+    private void initElements() {
+        initComboBoxes();
+
+        nameField.requestFocus();
+    }
+
+
+    private void initComboBoxes() {
+
+        initFrontManComboBox();
+        initMusicGenreComboBox();
+        initFrontManHeirColorComboBox();
+        initFrontManNationalityComboBox();
+    }
+
+
+    private void initFrontManComboBox() {
+
+        ObservableList<String> frontManComboBoxValues = FXCollections.observableArrayList();
+        frontManComboBoxValues.add("not " + nullSymbol);
+        frontManComboBoxValues.add(nullSymbol);
+
+
+        frontManComboBox.setItems(frontManComboBoxValues);
+
+        frontManComboBox.getSelectionModel().selectFirst();
+    }
+
+
+    private void initMusicGenreComboBox() {
+        musicGenreComboBox.getItems().addAll(MusicGenre.values());
+    }
+
+
+    private void initFrontManHeirColorComboBox() {
+        frontManHeirColorComboBox.getItems().addAll(Color.values());
+    }
+
+
+    private void initFrontManNationalityComboBox() {
+        frontManNationalityComboBox.getItems().addAll(Country.values());
     }
 
 
@@ -255,12 +324,14 @@ public class EditMusicBandDialogController {
 
         }
 
-
         mb.setFrontMan(person);
 
 
 
         if (errors.length() != 0) {
+
+            mb = null;
+
             throw new IllegalArgumentException(errors.toString());
         }
 
@@ -294,14 +365,31 @@ public class EditMusicBandDialogController {
     }
 
 
-    @FXML
-    private void frontManComboBoxListener(ActionEvent event) {
+    private void clearAllFields() {
 
-        if (frontManComboBox.getValue().equals(nullSymbol)) {
-            processNullFrontMan();
-        } else if (frontManComboBox.getValue().equals("not " + nullSymbol)) {
-            processNotNullFrontMan();
-        }
+//        idField.clear();
+        nameField.clear();
+        coordXField.clear();
+        coordYField.clear();
+//        creationDateField.clear();
+        numberOfParticipantsField.clear();
+        singlesCountField.clear();
+        musicGenreComboBox.getSelectionModel().clearSelection();
+        frontManComboBox.getSelectionModel().selectFirst();
+        frontManNameField.clear();
+        frontManHeightField.clear();
+        frontManHeirColorComboBox.getSelectionModel().clearSelection();
+        frontManNationalityComboBox.getSelectionModel().clearSelection();
+        frontManLocXField.clear();
+        frontManLocYField.clear();
+        frontManLocNameField.clear();
+
+
+    }
+
+
+    private boolean isNullSymbol(TextField field) {
+        return field.getText().equals(nullSymbol);
     }
 
 
@@ -311,45 +399,6 @@ public class EditMusicBandDialogController {
     }
 
 
-    private boolean isNullSymbol(TextField field) {
-        return field.getText().equals(nullSymbol);
-    }
-
-
-    private void initComboBoxes() {
-
-        initFrontManComboBox();
-        initMusicGenreComboBox();
-        initFrontManHeirColorComboBox();
-        initFrontManNationalityComboBox();
-    }
-
-
-    private void initFrontManComboBox() {
-
-        ObservableList<String> frontManComboBoxValues = FXCollections.observableArrayList();
-        frontManComboBoxValues.add(nullSymbol);
-        frontManComboBoxValues.add("not " + nullSymbol);
-
-        frontManComboBox.setItems(frontManComboBoxValues);
-
-        frontManComboBox.getSelectionModel().select(1);
-    }
-
-
-    private void initMusicGenreComboBox() {
-        musicGenreComboBox.getItems().addAll(MusicGenre.values());
-    }
-
-
-    private void initFrontManHeirColorComboBox() {
-        frontManHeirColorComboBox.getItems().addAll(Color.values());
-    }
-
-
-    private void initFrontManNationalityComboBox() {
-        frontManNationalityComboBox.getItems().addAll(Country.values());
-    }
 
 
     public void setDialogStage(Stage dialogStage) {
@@ -358,5 +407,17 @@ public class EditMusicBandDialogController {
 
     public void setMain(Main main) {
         this.main = main;
+    }
+
+    public MusicBand getMusicBand() {
+        return mb;
+    }
+
+    public String getNullSymbol() {
+        return nullSymbol;
+    }
+
+    public void setNullSymbol(String nullSymbol) {
+        this.nullSymbol = nullSymbol;
     }
 }
