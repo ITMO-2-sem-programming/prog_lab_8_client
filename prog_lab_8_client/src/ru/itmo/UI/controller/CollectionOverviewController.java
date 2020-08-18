@@ -6,10 +6,12 @@ import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.itmo.UI.Main;
-import ru.itmo.UI.util.DateUtil;
 import ru.itmo.core.common.classes.Color;
 import ru.itmo.core.common.classes.Country;
 import ru.itmo.core.common.classes.MusicBand;
@@ -23,7 +25,7 @@ public class CollectionOverviewController {
 
     private Main main;
 
-    private Stage collectionOverviewStage;
+    private Stage stage;
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -35,7 +37,16 @@ public class CollectionOverviewController {
 
 
     @FXML
+    private AnchorPane pane;
+
+    @FXML
     private TextField filterField;
+
+    @FXML
+    private Button visualizeCollectionButton;
+
+    @FXML
+    private Button editChosenElementButton;
 
 
     @FXML
@@ -104,14 +115,18 @@ public class CollectionOverviewController {
     @FXML
     private TableColumn<MusicBand, Object> frontManLocNameColumn;
 
+
 //----------------------------------------------------------------------------------------------------------------------
+
 
     // Some other fields
 
-    private boolean editMusicBandDialogStageIsCreated
-            = false;
 
-    private Stage createMBdDialogStage;
+    private boolean visualizeCollectionButtonWasPressed;
+//    private boolean editMusicBandDialogStageIsCreated
+//            = false;
+
+//    private Stage editMusicBandBdDialogStage;
 
 //    @FXML
 //    private TableColumn<MusicBand, >
@@ -123,15 +138,34 @@ public class CollectionOverviewController {
     @FXML
     private void initialize() {
 
-        initElements();
+        stage = new Stage();
+        stage.setTitle("Collection overview.");
+        stage.setResizable(false);
 
+
+        initElements();
 
     }
 
 
+    private void initialiseAfterMainSet() {
+
+        fillCollectionTable();
+
+        BorderPane rootPane = main.getRootPane();
+        rootPane.setCenter(pane);
+
+        Scene scene = new Scene(rootPane);
+        stage.setScene(scene);
+
+    }
+
+
+    // TODO: 8/18/20
     private void initElements() {
 
         initCollectionTable();
+        initComboBoxes(); // TODO: 8/18/20
     }
 
 
@@ -322,46 +356,36 @@ public class CollectionOverviewController {
 
         enableFiltering();
     }
+    
+    
+    private void initComboBoxes() {
+        // TODO: 8/18/20  
+    }
 
 
     @FXML
     private void handleCreateMusicBandButton() {
 
-        if ( ! editMusicBandDialogStageIsCreated ) {
-            createMBdDialogStage = createEditMusicBandDialogStage();
-        }
+        EditMusicBandDialogController editMusicBandDialogController = main.loadEditMusicBandDialog();
+        Stage stage = editMusicBandDialogController.getStage(); // -- everything sweet begins here
 
+        stage.setTitle("Create MusicBand");
+        stage.initOwner(this.stage);
 
-        createMBdDialogStage.showAndWait(); // -- everything sweet begins here
+       editMusicBandDialogController.setMusicBand(null);
 
+        stage.showAndWait();
         //TODO
-
         // Our MusicBand :
-         System.out.println(main.getEditMusicBandDialogController().getMusicBand());
+         System.out.println(editMusicBandDialogController.getMusicBand());
     }
 
 
-    private Stage createEditMusicBandDialogStage() {
+    @FXML
+    private void handleVisualizeCollection() { // // TODO: 8/18/20 Some mistakes could be here 
 
-
-        Stage createMBdDialogStage = new Stage();
-        createMBdDialogStage.setTitle("Create Music band");
-
-        createMBdDialogStage.initModality(Modality.WINDOW_MODAL);
-        createMBdDialogStage.initOwner(collectionOverviewStage);
-
-
-        createMBdDialogStage.setScene(
-                new Scene(main.getEditMusicBandDialogPane())
-        );
-
-
-        main.getEditMusicBandDialogController().setEditMusicBandDialogStage(createMBdDialogStage);
-
-
-        editMusicBandDialogStageIsCreated = true; // - important piece
-
-        return  createMBdDialogStage;
+        main.getCollectionVisualizationController().getStage().show();
+//        stage.show();
 
     }
 
@@ -373,15 +397,6 @@ public class CollectionOverviewController {
 
     private void handleSubmitButton() {
         //TODO
-    }
-
-
-    @Deprecated
-    private int comparatorBooleanToInt(boolean condition) {
-
-        if (condition) return 1;
-        else return -1;
-
     }
 
 
@@ -477,11 +492,15 @@ public class CollectionOverviewController {
 
         this.main = main;
 
-        fillCollectionTable();
+        initialiseAfterMainSet();
     }
 
-    public void setCollectionOverviewStage(Stage collectionOverviewStage) {
-        this.collectionOverviewStage = collectionOverviewStage;
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    public Stage getStage() {
+        return stage;
     }
 
     public String getNullSymbol() {
@@ -492,7 +511,4 @@ public class CollectionOverviewController {
         this.nullSymbol = nullSymbol;
     }
 
-    private void setEditMusicBandDialogStageIsCreated(boolean editMusicBandDialogStageIsCreated) {
-        this.editMusicBandDialogStageIsCreated = editMusicBandDialogStageIsCreated;
-    }
 }

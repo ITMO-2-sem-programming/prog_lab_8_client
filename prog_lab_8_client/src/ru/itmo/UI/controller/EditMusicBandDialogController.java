@@ -4,8 +4,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.itmo.UI.Main;
 import ru.itmo.core.common.classes.*;
@@ -18,12 +22,15 @@ public class EditMusicBandDialogController {
     private String nullSymbol
             = "null";
 
-    Main main;
+    private Main main;
 
-    private Stage editMusicBandDialogStage;
+    private Stage stage;
+
+    @FXML
+    private BorderPane pane;
 
     private MusicBand mb
-            =null;
+            = null;
 //    private boolean submitButtonIsClicked
 //            = false;
 
@@ -39,8 +46,8 @@ public class EditMusicBandDialogController {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-//    @FXML
-//    private TextField idField;
+    @FXML
+    private TextField idField;
 
     @FXML
     private TextField nameField;
@@ -51,8 +58,8 @@ public class EditMusicBandDialogController {
     @FXML
     private TextField coordYField;
 
-//    @FXML
-//    private TextField creationDateField;
+    @FXML
+    private TextField creationDateField;
 
     @FXML
     private TextField numberOfParticipantsField;
@@ -64,7 +71,7 @@ public class EditMusicBandDialogController {
     private ComboBox<MusicGenre> musicGenreComboBox;
 
     @FXML
-    private ComboBox<String> frontManComboBox;
+    private ComboBox<FrontManComboBoxOptions> frontManComboBox;
 
     @FXML
     private TextField frontManNameField;
@@ -87,16 +94,31 @@ public class EditMusicBandDialogController {
     @FXML
     private TextField frontManLocNameField;
 
+
 //----------------------------------------------------------------------------------------------------------------------
 
 
+    // Methods
 
 
     @FXML
     private void initialize() {
-        //TODO
+
+        stage = new Stage();
+        stage.setTitle("Edit Music band");
+        stage.initModality(Modality.WINDOW_MODAL);
+        Scene scene = new Scene(pane);
+        stage.setScene(scene);
+        
+        stage.setOnCloseRequest( //// TODO: 8/18/20   Pay pay attention here 
+                event -> 
+                        mb = null
+        );
+
         initElements();
-        clearAllFields();
+//        setFields();
+
+        System.out.println("initialize()   method execs");
     }
 
 
@@ -118,14 +140,14 @@ public class EditMusicBandDialogController {
 
     private void initFrontManComboBox() {
 
-        ObservableList<String> frontManComboBoxValues = FXCollections.observableArrayList();
-        frontManComboBoxValues.add("not " + nullSymbol);
-        frontManComboBoxValues.add(nullSymbol);
+        ObservableList<FrontManComboBoxOptions> frontManComboBoxValues = FXCollections.observableArrayList();
+        frontManComboBoxValues.add(FrontManComboBoxOptions.NOT_NULL);
+        frontManComboBoxValues.add(FrontManComboBoxOptions.NULL);
 
 
         frontManComboBox.setItems(frontManComboBoxValues);
 
-        frontManComboBox.getSelectionModel().selectFirst();
+        frontManComboBox.getSelectionModel().select(FrontManComboBoxOptions.NOT_NULL);
     }
 
 
@@ -148,6 +170,7 @@ public class EditMusicBandDialogController {
     private void handleSubmitButton() {
 
         try {
+
             mb = createMusicBand();
 
 
@@ -164,7 +187,7 @@ public class EditMusicBandDialogController {
 
 //            submitButtonIsClicked = true;
 
-            editMusicBandDialogStage.close();
+            stage.close();
             System.out.println("Stage is closed");
 
 //            Thread.sleep(4000);
@@ -177,7 +200,7 @@ public class EditMusicBandDialogController {
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
 
-            alert.initOwner(editMusicBandDialogStage);
+            alert.initOwner(stage);
 
             alert.setTitle("Invalid fields");
             alert.setHeaderText("Please correct invalid fields");
@@ -194,16 +217,17 @@ public class EditMusicBandDialogController {
 
     @FXML
     private void handleCancelButton() {
-        editMusicBandDialogStage.close();
+        mb = null;
+        stage.close();
     }
 
 
     @FXML
-    private void handleFrontManComboBox(ActionEvent event) {
+    private void handleFrontManComboBox() {
 
-        if (frontManComboBox.getValue().equals(nullSymbol)) {
+        if (frontManComboBox.getValue().equals(FrontManComboBoxOptions.NULL)) {
             processNullFrontMan();
-        } else if (frontManComboBox.getValue().equals("not " + nullSymbol)) {
+        } else if (frontManComboBox.getValue().equals(FrontManComboBoxOptions.NOT_NULL)) {
             processNotNullFrontMan();
         }
     }
@@ -265,7 +289,7 @@ public class EditMusicBandDialogController {
 
         Person person = new Person();
 
-        if (frontManComboBox.getValue().equals(nullSymbol)) {
+        if (frontManComboBox.getValue().equals(FrontManComboBoxOptions.NULL)) {
             person = null;
             processNullFrontMan();
 
@@ -365,6 +389,43 @@ public class EditMusicBandDialogController {
     }
 
 
+    private void setFields() {
+
+        if (this.mb == null) {
+            clearAllFields();
+
+        } else {
+            idField.setText(mb.getId().toString());
+            nameField.setText(mb.getName());
+            coordXField.setText(String.valueOf(mb.getCoordinates().getX()));
+            coordYField.setText(String.valueOf(mb.getCoordinates().getY()));
+            creationDateField.setText(mb.getCreationDate().toString());
+            numberOfParticipantsField.setText(String.valueOf(mb.getNumberOfParticipants()));
+            singlesCountField.setText(String.valueOf(mb.getSinglesCount()));
+            musicGenreComboBox.setValue(mb.getGenre());
+
+            if (mb.getFrontMan() == null) {
+
+                frontManComboBox.getSelectionModel().select(FrontManComboBoxOptions.NULL);
+                processNullFrontMan();
+
+            } else {
+
+                frontManComboBox.getSelectionModel().select(FrontManComboBoxOptions.NOT_NULL);
+                frontManNameField.setText(processNullToString(mb.getFrontMan().getName()));
+                frontManHeightField.setText(processNullToString(mb.getFrontMan().getHeight()));
+                frontManHeirColorComboBox.setValue(mb.getFrontMan().getHeirColor());
+                frontManNationalityComboBox.setValue(mb.getFrontMan().getNationality());
+                frontManLocXField.setText(processNullToString(mb.getFrontMan().getLocation().getX()));
+                frontManLocYField.setText(processNullToString(mb.getFrontMan().getLocation().getY()));
+                frontManLocNameField.setText(processNullToString(mb.getFrontMan().getLocation().getName()));
+            }
+
+        }
+
+    }
+
+
     private void clearAllFields() {
 
 //        idField.clear();
@@ -393,23 +454,43 @@ public class EditMusicBandDialogController {
     }
 
 
-    private <T> T considerNull(T value) {
-        if (String.valueOf(value).equals(nullSymbol)) return null;
-        else return value;
+    private String processNullToString(Object object) {
+        if (object == null) return nullSymbol;
+        else return object.toString();
     }
 
 
-    public void setEditMusicBandDialogStage(Stage editMusicBandDialogStage) {
-        this.editMusicBandDialogStage = editMusicBandDialogStage;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+    // Getters and setters section
+
+
+    public Stage getStage() {
+        return stage;
     }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
 
     public void setMain(Main main) {
         this.main = main;
     }
 
+
     public MusicBand getMusicBand() {
         return mb;
     }
+
+
+    public void setMusicBand(MusicBand mb) {
+        this.mb = mb;
+        setFields();
+    }
+
 
     public String getNullSymbol() {
         return nullSymbol;
@@ -418,4 +499,21 @@ public class EditMusicBandDialogController {
     public void setNullSymbol(String nullSymbol) {
         this.nullSymbol = nullSymbol;
     }
+
+
+
+}
+
+
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+// Inner classes
+
+
+enum FrontManComboBoxOptions {
+    NULL,
+    NOT_NULL
 }

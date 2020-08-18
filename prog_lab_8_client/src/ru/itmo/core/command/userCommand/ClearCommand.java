@@ -1,4 +1,4 @@
-package ru.itmo.core.commands;
+package ru.itmo.core.command.userCommand;
 
 import ru.itmo.core.personalExceptions.InvalidCommandException;
 

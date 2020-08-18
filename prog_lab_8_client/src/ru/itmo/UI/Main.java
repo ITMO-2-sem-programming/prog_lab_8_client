@@ -9,10 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import ru.itmo.UI.controller.CollectionOverviewController;
-import ru.itmo.UI.controller.LoginDialogController;
-import ru.itmo.UI.controller.EditMusicBandDialogController;
-import ru.itmo.UI.controller.RootPaneController;
+import ru.itmo.UI.controller.*;
 import ru.itmo.core.common.classes.*;
 
 import java.io.IOException;
@@ -20,19 +17,25 @@ import java.io.IOException;
 
 public class Main extends Application {
 
+
     ObservableList<MusicBand> collection
+            = FXCollections.observableArrayList();
+
+    ObservableList<Integer> ownedElementsID
             = FXCollections.observableArrayList();
 
 
     private Stage rootStage;
     private BorderPane rootPane;
 
-    private AnchorPane loginDialogPane;
-    private AnchorPane collectionOverviewPane;
-    private BorderPane editMusicBandDialogPane;
+//    private AnchorPane loginDialogPane;
+//    private AnchorPane collectionOverviewPane;
+//    private BorderPane editMusicBandDialogPane;
+//    private AnchorPane collectionVisualizationPane;
 
     private RootPaneController rootPaneController;
     private CollectionOverviewController collectionOverviewController;
+    private CollectionVisualizationController collectionVisualizationController;
     private EditMusicBandDialogController editMusicBandDialogController;
     private LoginDialogController loginDialogController;
 
@@ -121,14 +124,17 @@ public class Main extends Application {
 
     @Override
     public void start(Stage rootStage) {
+//        initialize();
 
         this.rootStage = rootStage;
 
         try {
 
-            loadEditMusicBandDialogPane();
-            loadLoginDialogPane();
-            loadRootPane();
+            loadEditMusicBandDialog();
+            loadLoginDialog();
+            loadRoot();
+            loadCollectionVisualization();
+            loadCollectionOverview();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -137,150 +143,186 @@ public class Main extends Application {
 
 //        initLoginDialogPane();
 
-        initCollectionOverviewPane();
+//        initCollectionOverviewPane();
+        collectionOverviewController.getStage().show();
 
 //        initEditMusicBandDialogPane();
 //        editMusicBandDialogController.setDialogStage(rootStage);
-        rootStage.show();
+//        rootStage.show();
     }
+
+
+    // Разобраться с этим позднее
+//    private void initialize() {
+//        collection = FXCollections.observableArrayList();
+//
+//    }
 
 
     /**
      * Creates a scene with LoginDialogPane and sets it to rootStage.
      * <br>Sets title of the stage.
      */
-    private void initLoginDialogPane() {
+//    private void initLoginDialogPane() {
+//
+//        try {
+//            loadLoginDialogPane();
+//
+//            Scene scene = new Scene(loginDialogPane);
+//
+//            rootStage.setScene(scene);
+//
+//            rootStage.setResizable(false); // Is this really needed ?
+//
+//            rootStage.setTitle("Authorisation/Registration");
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+
+
+//    private void initCollectionOverviewPane() {
+//
+//        try {
+//            loadCollectionOverviewPane();
+//
+//            collectionOverviewController.setCollectionOverviewStage(rootStage);
+//
+//            Scene scene = new Scene(collectionOverviewPane);
+//
+//            rootStage.setScene(scene);
+//
+//            rootStage.setResizable(false); // Is this really needed ?
+//
+//            rootStage.setTitle("CollectionOverview");
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
+
+//    private void initRootPane() {
+//
+//        try {
+//            loadRootPane();
+//
+//            Scene scene = new Scene(rootPane);
+//
+//            rootStage.setScene(scene);
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
+
+
+    private RootPaneController loadRoot() throws IOException {
 
         try {
-            loadLoginDialogPane();
 
-            Scene scene = new Scene(loginDialogPane);
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/RootPane.fxml"));
+            rootPane = loader.load();
 
-            rootStage.setScene(scene);
+            rootPaneController = loader.getController();
+            rootPaneController.setMain(this);
 
-            rootStage.setResizable(false); // Is this really needed ?
-
-            rootStage.setTitle("Authorisation/Registration");
+            return rootPaneController;
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException(e.getMessage());
+        }
+
+    }
+
+    // Отличается от остальных методов загрузки, так как EditMusicBandDialog может быть вызван из разных окон,
+    // а устанавливать окно-владельца можно только один раз для конкретного экземпляра.
+    public EditMusicBandDialogController loadEditMusicBandDialog() {
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/EditMusicBandDialogPane.fxml"));
+            loader.load();
+
+            EditMusicBandDialogController editMusicBandDialogController = loader.getController();
+            editMusicBandDialogController.setMain(this);
+
+            return editMusicBandDialogController;
+
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
+
+
+    private void loadLoginDialog() {
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/LoginDialogPane.fxml"));
+            loader.load();
+
+            loginDialogController = loader.getController();
+            loginDialogController.setMain(this);
+
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+
+
+    }
+
+
+    private void loadCollectionOverview() {
+
+        try {
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/CollectionOverviewPane.fxml"));
+            loader.load();
+
+            collectionOverviewController = loader.getController();
+            collectionOverviewController.setMain(this);
+
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e.getMessage());
         }
 
     }
 
 
-    private void initCollectionOverviewPane() {
+    private CollectionVisualizationController loadCollectionVisualization() {
 
         try {
-            loadCollectionOverviewPane();
 
-            collectionOverviewController.setCollectionOverviewStage(rootStage);
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/CollectionVisualizationPane.fxml"));
+            loader.load();
 
-            Scene scene = new Scene(collectionOverviewPane);
+            collectionVisualizationController = loader.getController();
+            collectionVisualizationController.setMain(this);
 
-            rootStage.setScene(scene);
-
-            rootStage.setResizable(false); // Is this really needed ?
-
-            rootStage.setTitle("CollectionOverview");
+            return collectionVisualizationController;
 
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
-    private void initRootPane() {
-
-        try {
-            loadRootPane();
-
-            Scene scene = new Scene(rootPane);
-
-            rootStage.setScene(scene);
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException(e.getMessage());
         }
 
     }
 
 
-    private void initEditMusicBandDialogPane() {
-
-        try {
-            loadEditMusicBandDialogPane();
-
-            Scene scene = new Scene(editMusicBandDialogPane);
-
-            rootStage.setScene(scene);
-
-            rootStage.setTitle("Create new music band.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//----------------------------------------------------------------------------------------------------------------------
 
 
-    @Deprecated
-    private Pane loadPane(String path) throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource(path));
-        return loader.load();
-    }
+    // Getters and setters section
 
-
-    private void loadRootPane() throws IOException {
-
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("view/RootPane.fxml"));
-        rootPane = loader.load();
-
-        rootPaneController = loader.getController();
-        rootPaneController.setMain(this);
-
-    }
-
-
-    private void loadEditMusicBandDialogPane() throws IOException {
-
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("view/EditMusicBandDialogPane.fxml"));
-        editMusicBandDialogPane = loader.load();
-
-        editMusicBandDialogController = loader.getController();
-        editMusicBandDialogController.setMain(this);
-
-    }
-
-
-    private void loadLoginDialogPane() throws IOException {
-
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("view/LoginDialogPane.fxml"));
-        loginDialogPane = loader.load();
-
-        loginDialogController = loader.getController();
-        loginDialogController.setMain(this);
-
-    }
-
-
-    private void loadCollectionOverviewPane() throws IOException {
-
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(Main.class.getResource("view/CollectionOverviewPane.fxml"));
-        collectionOverviewPane = loader.load();
-
-        collectionOverviewController = loader.getController();
-        collectionOverviewController.setMain(this);
-
-    }
-
-
-
-    // Getters and setters
 
     public Stage getRootStage() {
         return rootStage;
@@ -292,18 +334,22 @@ public class Main extends Application {
     public BorderPane getRootPane() {
         return rootPane;
     }
-
-    public AnchorPane getLoginDialogPane() {
-        return loginDialogPane;
-    }
-
-    public AnchorPane getCollectionOverviewPane() {
-        return collectionOverviewPane;
-    }
-
-    public BorderPane getEditMusicBandDialogPane() {
-        return editMusicBandDialogPane;
-    }
+//
+//    public AnchorPane getLoginDialogPane() {
+//        return loginDialogPane;
+//    }
+//
+//    public AnchorPane getCollectionOverviewPane() {
+//        return collectionOverviewPane;
+//    }
+//
+//    public BorderPane getEditMusicBandDialogPane() {
+//        return editMusicBandDialogPane;
+//    }
+//
+//    public AnchorPane getCollectionVisualizationPane() {
+//        return collectionVisualizationPane;
+//    }
 
 
     // Controllers
@@ -324,10 +370,18 @@ public class Main extends Application {
         return loginDialogController;
     }
 
+    public CollectionVisualizationController getCollectionVisualizationController() {
+        return collectionVisualizationController;
+    }
+
 
     // Other staff
 
     public ObservableList<MusicBand> getCollection() {
         return collection;
+    }
+
+    public ObservableList<Integer> getOwnedElementsID() {
+        return ownedElementsID;
     }
 }
