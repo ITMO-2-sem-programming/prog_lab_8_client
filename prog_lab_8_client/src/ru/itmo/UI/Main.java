@@ -4,24 +4,25 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import ru.itmo.UI.controller.*;
 import ru.itmo.core.common.classes.*;
 
 import java.io.IOException;
+import java.util.PriorityQueue;
 
 
 public class Main extends Application {
 
 
-    ObservableList<MusicBand> collection
+    Client client;
+
+
+    private ObservableList<MusicBand> collection
             = FXCollections.observableArrayList();
 
-    ObservableList<Integer> ownedElementsID
+    private ObservableList<Integer> ownedElementsID
             = FXCollections.observableArrayList();
 
 
@@ -41,6 +42,9 @@ public class Main extends Application {
 
 
     public Main() {
+
+
+        Client client = new Client(); // TODO: 20.08.2020 Some checks here
 
         collection.add(
                 new MusicBand(
@@ -130,12 +134,14 @@ public class Main extends Application {
 
         try {
 
-            loadEditMusicBandDialog();
             loadLoginDialog();
             loadRoot();
-            loadCollectionVisualization();
             loadCollectionOverview();
-        } catch (IOException e) {
+            loadEditMusicBandDialog();
+            loadCollectionVisualization();
+
+
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
 //        loadCollectionOverviewPane();
@@ -220,8 +226,26 @@ public class Main extends Application {
 //
 //    }
 
+    private void loadLoginDialog() {
 
-    private RootPaneController loadRoot() throws IOException {
+        try {
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(Main.class.getResource("view/LoginDialogPane.fxml"));
+            loader.load();
+
+            loginDialogController = loader.getController();
+            loginDialogController.setMain(this);
+
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+
+
+    }
+
+
+    private RootPaneController loadRoot() {
 
         try {
 
@@ -261,26 +285,8 @@ public class Main extends Application {
     }
 
 
-    private void loadLoginDialog() {
 
-        try {
-
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource("view/LoginDialogPane.fxml"));
-            loader.load();
-
-            loginDialogController = loader.getController();
-            loginDialogController.setMain(this);
-
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e.getMessage());
-        }
-
-
-    }
-
-
-    private void loadCollectionOverview() {
+    private CollectionOverviewController loadCollectionOverview() {
 
         try {
 
@@ -290,6 +296,8 @@ public class Main extends Application {
 
             collectionOverviewController = loader.getController();
             collectionOverviewController.setMain(this);
+
+            return collectionOverviewController;
 
         } catch (IOException e) {
             throw new IllegalArgumentException(e.getMessage());
@@ -324,6 +332,11 @@ public class Main extends Application {
     // Getters and setters section
 
 
+    public Client getClient() {
+        return client;
+    }
+
+
     public Stage getRootStage() {
         return rootStage;
     }
@@ -331,28 +344,15 @@ public class Main extends Application {
 
     // Panes
 
+
     public BorderPane getRootPane() {
         return rootPane;
     }
-//
-//    public AnchorPane getLoginDialogPane() {
-//        return loginDialogPane;
-//    }
-//
-//    public AnchorPane getCollectionOverviewPane() {
-//        return collectionOverviewPane;
-//    }
-//
-//    public BorderPane getEditMusicBandDialogPane() {
-//        return editMusicBandDialogPane;
-//    }
-//
-//    public AnchorPane getCollectionVisualizationPane() {
-//        return collectionVisualizationPane;
-//    }
+
 
 
     // Controllers
+
 
     public RootPaneController getRootPaneController() {
         return rootPaneController;

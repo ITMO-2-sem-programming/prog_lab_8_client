@@ -56,6 +56,7 @@ public class MusicBand implements Comparable<MusicBand>, Serializable {
 
     static {
         musicBandFieldsDescription = new HashMap<>();
+        musicBandFieldsDescription.put("id",                   "Field 'id' {Integer} must be greater than zero.");
         musicBandFieldsDescription.put("name",                 "Field band 'name' {String} can't be null or empty.");
         musicBandFieldsDescription.put("coordinates",          "Field band 'coordinates' {Coordinates} can't be null.");
         musicBandFieldsDescription.put("numberOfParticipants", "Field 'number of participants' {long} must be greater than zero.");

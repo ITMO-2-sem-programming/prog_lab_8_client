@@ -8,10 +8,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import ru.itmo.UI.Main;
+import ru.itmo.core.command.userCommand.command.representation.CommandRepresentation;
+import ru.itmo.core.command.userCommand.command.UpdateCommand;
 import ru.itmo.core.common.classes.Color;
 import ru.itmo.core.common.classes.Country;
 import ru.itmo.core.common.classes.MusicBand;
@@ -36,6 +36,9 @@ public class CollectionOverviewController {
 //----------------------------------------------------------------------------------------------------------------------
 
 
+    // CollectionOverview elements
+
+
     @FXML
     private AnchorPane pane;
 
@@ -53,7 +56,7 @@ public class CollectionOverviewController {
     private Button submitButton;
 
     @FXML
-    private ComboBox<String> userCommandComboBox;
+    private ComboBox<CommandRepresentation> userCommandComboBox;
 
     @FXML
     private TextField argumentField;
@@ -64,7 +67,11 @@ public class CollectionOverviewController {
     @FXML
     private TextArea resultArea;
 
+
 //----------------------------------------------------------------------------------------------------------------------
+
+
+    // TableView section
 
 
     @FXML
@@ -119,21 +126,8 @@ public class CollectionOverviewController {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-    // Some other fields
+    // Methods
 
-
-    private boolean visualizeCollectionButtonWasPressed;
-//    private boolean editMusicBandDialogStageIsCreated
-//            = false;
-
-//    private Stage editMusicBandBdDialogStage;
-
-//    @FXML
-//    private TableColumn<MusicBand, >
-
-    ///
-
-    ///
 
     @FXML
     private void initialize() {
@@ -147,8 +141,13 @@ public class CollectionOverviewController {
 
     }
 
-
-    private void initialiseAfterMainSet() {
+    // TODO: 20.08.2020
+    //  Прописать функционал редакторов Муз Банды,
+    //  Научить их добавлять реквесты в очередь клиента
+    //  Добавить отображение команд в КомбоБох
+    //  Добавить соответствующую реакцию на выбранную команду, которая (реакция) выражается в блокировки полей для тех аргументов , которые команда не принимает.
+    //
+    private void initializeAfterMainSet() {
 
         fillCollectionTable();
 
@@ -362,6 +361,18 @@ public class CollectionOverviewController {
         // TODO: 8/18/20  
     }
 
+    private void initUserCommandComboBox() {
+        userCommandComboBox.getItems().addAll(
+                UpdateCommand.getCommandRepresentation()
+        );
+    }
+
+
+    @FXML
+    private void handleUserCommandComboBox() {
+        // TODO: 8/19/20
+    }
+
 
     @FXML
     private void handleCreateMusicBandButton() {
@@ -390,9 +401,7 @@ public class CollectionOverviewController {
     }
 
 
-    private void initUserCommandComboBox() {
-        //TODO
-    }
+
 
 
     private void handleSubmitButton() {
@@ -492,7 +501,7 @@ public class CollectionOverviewController {
 
         this.main = main;
 
-        initialiseAfterMainSet();
+        initializeAfterMainSet();
     }
 
     public void setStage(Stage stage) {
