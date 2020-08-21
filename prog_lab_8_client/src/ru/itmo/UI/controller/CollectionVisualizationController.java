@@ -17,7 +17,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import ru.itmo.UI.Main;
+import ru.itmo.core.command.userCommand.command.UpdateCommand;
 import ru.itmo.core.common.classes.MusicBand;
+import ru.itmo.core.exchangeNew.Request;
 import ru.itmo.util.CirclePositioner;
 import ru.itmo.util.mapper.Mapper;
 import ru.itmo.util.mapper.MappingRange;
@@ -59,9 +61,9 @@ public class CollectionVisualizationController {
     private int animationCycleCount
             = 1;
     private double animationDelayLowerBoundMillis
-            = 1000;
+            = 600;
     private double animationDelayHigherBoundMillis
-            = 4000;
+            = 3000;
     private List<FadeTransition> animationList
             = new ArrayList<>();
     private EventHandler<ContextMenuEvent> contextMenuHandler;
@@ -74,7 +76,7 @@ public class CollectionVisualizationController {
         stage.setTitle("Visualize collection");
         stage.setResizable(false);
         stage.initModality(Modality.NONE);
-        stage.setWidth(new CirclePositioner(120, 20, 6).getRowWidth()); // todo Non-tested !!!
+//        stage.setWidth(new CirclePositioner(120, 20, 6).getRowWidth()); // todo Non-tested !!!
 
         Scene scene = new Scene(pane);
         stage.setScene(scene);
@@ -96,8 +98,22 @@ public class CollectionVisualizationController {
 
         editMenuItem.setOnAction(
                 event -> {
-                    System.out.println("I'm editing...");
-                    System.out.println("Editing circle Id : " + chosenCircleID);
+                    EditMusicBandDialogController editMusicBandDialogController = main.loadEditMusicBandDialog();
+                    MusicBand editingMusicBand = main.getCollection().stream().filter(
+                            (element) -> element.getId().equals(chosenCircleID)).findAny().orElse(null);
+                    editMusicBandDialogController.setMusicBand(editingMusicBand);
+
+                    Stage stage = editMusicBandDialogController.getStage();
+                    stage.showAndWait();
+
+                    MusicBand newMusicBand = editMusicBandDialogController.getMusicBand();
+
+
+                    if (newMusicBand != null) {
+                        main.getClient().addRequest(new Request(
+                                new UpdateCommand(newMusicBand.getId(), newMusicBand)));
+                    }
+
                 });
 
 

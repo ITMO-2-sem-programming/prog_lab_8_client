@@ -76,9 +76,11 @@ public class CirclePositioner {
     }
 
 
-    public double getRowWidth() {
-        return (gap + radius) * columnNumber + gap;
-    }
+    // Ненайденная ошибка
+//    public double getRowWidth() {
+////        System.out.println("Row width : ");
+//        return (gap + radius) * columnNumber + gap + radius;
+//    }
 
 
 //----------------------------------------------------------------------------------------------------------------------

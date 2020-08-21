@@ -5,7 +5,7 @@ package ru.itmo.core.command.userCommand.command.representation;
 public class UpdateCommandRepresentation extends CommandRepresentation {
 
 
-    protected UpdateCommandRepresentation() {
+    public UpdateCommandRepresentation() {
         super(
                 "update",
                 "Command: update <id> {element}" +

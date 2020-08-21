@@ -1,7 +1,8 @@
 package ru.itmo.UI;
 
 
-import ru.itmo.core.common.exchange.request.Request;
+
+import ru.itmo.core.exchangeNew.Request;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -30,6 +31,10 @@ public class Client {
      * @return true if the specified request was successfully added to the queue. Returns false if the queue does not have free space.
      */
     public boolean addRequest(Request request) {
+        System.out.println(
+                "I've got new Request..." +
+                "\nRequests list : " +
+                "\n" + requestsQueue.toString());
         return requestsQueue.offer(request);
     }
 

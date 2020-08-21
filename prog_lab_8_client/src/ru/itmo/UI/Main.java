@@ -44,7 +44,10 @@ public class Main extends Application {
     public Main() {
 
 
-        Client client = new Client(); // TODO: 20.08.2020 Some checks here
+        client = new Client(); // TODO: 20.08.2020 Some checks here
+
+
+        ownedElementsID.addAll(3,4);
 
         collection.add(
                 new MusicBand(
@@ -274,7 +277,7 @@ public class Main extends Application {
             loader.setLocation(Main.class.getResource("view/EditMusicBandDialogPane.fxml"));
             loader.load();
 
-            EditMusicBandDialogController editMusicBandDialogController = loader.getController();
+            editMusicBandDialogController = loader.getController();
             editMusicBandDialogController.setMain(this);
 
             return editMusicBandDialogController;

@@ -51,7 +51,7 @@ public class UpdateCommand implements UserCommand {
     private void setElement(MusicBand element) {
 
         if (element == null)
-            throw new IllegalArgumentException("Element can't ve null.");
+            throw new IllegalArgumentException("Element can't be null.");
 
         this.element = element;
     }

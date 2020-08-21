@@ -2,11 +2,9 @@ package ru.itmo.UI.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
@@ -118,7 +116,7 @@ public class EditMusicBandDialogController {
         initElements();
 //        setFields();
 
-        System.out.println("initialize()   method execs");
+//        System.out.println("initialize()   method execs");
     }
 
 
@@ -135,6 +133,7 @@ public class EditMusicBandDialogController {
         initMusicGenreComboBox();
         initFrontManHeirColorComboBox();
         initFrontManNationalityComboBox();
+
     }
 
 
@@ -182,13 +181,13 @@ public class EditMusicBandDialogController {
 //            infoAlert.showAndWait();
 
 
-            System.out.println(mb); ///reeeeplaacee
+//            System.out.println(mb); ///reeeeplaacee
 
 
 //            submitButtonIsClicked = true;
 
             stage.close();
-            System.out.println("Stage is closed");
+//            System.out.println("Stage is closed");
 
 //            Thread.sleep(4000);
 

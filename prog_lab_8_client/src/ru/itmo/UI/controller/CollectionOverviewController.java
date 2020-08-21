@@ -6,16 +6,19 @@ import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 import ru.itmo.UI.Main;
-import ru.itmo.core.command.userCommand.command.representation.CommandRepresentation;
-import ru.itmo.core.command.userCommand.command.UpdateCommand;
+import ru.itmo.core.command.userCommand.command.*;
+import ru.itmo.core.command.userCommand.command.representation.*;
 import ru.itmo.core.common.classes.Color;
 import ru.itmo.core.common.classes.Country;
 import ru.itmo.core.common.classes.MusicBand;
 import ru.itmo.core.common.classes.MusicGenre;
+import ru.itmo.core.exchangeNew.Request;
 
 import java.util.Date;
 
@@ -50,6 +53,9 @@ public class CollectionOverviewController {
 
     @FXML
     private Button editChosenElementButton;
+
+    @FXML
+    private Button removeChosenElementButton;
 
 
     @FXML
@@ -358,19 +364,61 @@ public class CollectionOverviewController {
     
     
     private void initComboBoxes() {
-        // TODO: 8/18/20  
+        initUserCommandComboBox();
     }
+
 
     private void initUserCommandComboBox() {
         userCommandComboBox.getItems().addAll(
-                UpdateCommand.getCommandRepresentation()
+                new UpdateCommandRepresentation(),
+                new ShowCommandRepresentation(),
+                new ReplaceIfLowerCommandRepresentation(),
+                new RemoveLowerKeyCommandRepresentation(),
+                new RemoveGreaterCommandRepresentation(),
+                new RemoveByKeyCommandRepresentation(),
+                new RemoveAllByGenreCommandRepresentation(),
+                new MaxByFrontManCommandRepresentation(),
+                new InsertCommandRepresentation(),
+                new InfoCommandRepresentation(),
+                new HelpCommandRepresentation(),
+                new FilterGreaterThanSinglesCountCommandRepresentation(),
+                new ExecuteScriptCommandRepresentation(),
+                new ClearCommandRepresentation()
         );
     }
 
 
     @FXML
+    private void handleVisualizeCollection() {
+
+        Stage stage = main.getCollectionVisualizationController().getStage();
+        stage.show();
+
+    }
+
+
+    @FXML
+    private void handleEditChosenElement() {
+        // TODO: 21.08.2020
+    }
+
+
+    @FXML
+    private void handleRemoveChosenElementButton() {
+        // TODO: 21.08.2020
+    }
+
+
+    @FXML
     private void handleUserCommandComboBox() {
-        // TODO: 8/19/20
+
+        CommandRepresentation cmdRepr = userCommandComboBox.getValue();
+
+        argumentField.setDisable( ! cmdRepr.hasSimpleArgument());
+        createMusicBandButton.setDisable( ! cmdRepr.hasElementArgument());
+
+        resultArea.setText(cmdRepr.getCommandDescription());
+
     }
 
 
@@ -388,24 +436,250 @@ public class CollectionOverviewController {
         stage.showAndWait();
         //TODO
         // Our MusicBand :
-         System.out.println(editMusicBandDialogController.getMusicBand());
+        //System.out.println(editMusicBandDialogController.getMusicBand());
     }
 
 
     @FXML
-    private void handleVisualizeCollection() { // // TODO: 8/18/20 Some mistakes could be here 
-
-        main.getCollectionVisualizationController().getStage().show();
-//        stage.show();
-
-    }
-
-
-
-
-
     private void handleSubmitButton() {
-        //TODO
+
+
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Incorrect data");
+        alert.setHeaderText("Incorrect argument");
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
+
+
+        CommandRepresentation cmdRepr = userCommandComboBox.getValue();
+
+        if (cmdRepr == null) return;
+
+        if (cmdRepr instanceof UpdateCommandRepresentation) {
+            UpdateCommand updateCommand = null;
+            try {
+                updateCommand
+                        = new UpdateCommand(
+                                Integer.parseInt(argumentField.getText()),
+                                main.getEditMusicBandDialogController().getMusicBand()
+                        );
+
+                if ( ! main.getOwnedElementsID().contains(updateCommand.getID()) ) {
+                    alert.setContentText(
+                            String.format(
+                                    "You can't update element with ID : '%s' as you don't own it.",
+                                    updateCommand.getID()
+                            )
+                    );
+                }
+
+            } catch (NumberFormatException e) {
+                alert.setContentText("Argument must be integer.");
+            } catch (IllegalArgumentException e) {
+                alert.setContentText(e.getMessage());
+            } finally {
+                if ( ! alert.getContentText().equals("") )
+                    alert.showAndWait();
+                else {
+                    System.out.println("blblbla");
+                    main.getClient().addRequest(new Request(updateCommand));
+                }
+            }
+
+        } else if (cmdRepr instanceof ShowCommandRepresentation) {
+            main.getClient().addRequest(new Request(new ShowCommand()));
+
+        } else if (cmdRepr instanceof ReplaceIfLowerCommandRepresentation) {
+            ReplaceIfLowerCommand replaceIfLowerCommand = null;
+            try {
+                replaceIfLowerCommand
+                        = new ReplaceIfLowerCommand(
+                        Integer.parseInt(argumentField.getText()),
+                        main.getEditMusicBandDialogController().getMusicBand()
+                );
+
+                if ( ! main.getOwnedElementsID().contains(replaceIfLowerCommand.getID())) {
+                    alert.setContentText(
+                            String.format(
+                                    "You can't replace the element with ID : '%s' as you don't own it.",
+                                    replaceIfLowerCommand.getID()
+                            )
+                    );
+                }
+            } catch (NumberFormatException e) {
+                alert.setContentText("Argument must be integer.");
+            } catch (IllegalArgumentException e) {
+                alert.setContentText(e.getMessage());
+            } finally {
+                if (!alert.getContentText().equals(""))
+                    alert.showAndWait();
+                else {
+                    System.out.println("blblbla");
+                    main.getClient().addRequest(new Request(replaceIfLowerCommand));
+                }
+            }
+
+        } else if (cmdRepr instanceof RemoveLowerKeyCommandRepresentation) {
+            RemoveLowerKeyCommand removeLowerKeyCommand = null;
+            try {
+                removeLowerKeyCommand
+                        = new RemoveLowerKeyCommand(
+                        Integer.parseInt(argumentField.getText())
+                );
+            } catch (NumberFormatException e) {
+                alert.setContentText("Argument must be integer.");
+            } catch (IllegalArgumentException e) {
+                alert.setContentText(e.getMessage());
+            } finally {
+                if (!alert.getContentText().equals(""))
+                    alert.showAndWait();
+                else {
+                    System.out.println("blblbla");
+                    main.getClient().addRequest(new Request(removeLowerKeyCommand));
+                }
+            }
+
+        } else if (cmdRepr instanceof RemoveGreaterCommandRepresentation) {
+            RemoveGreaterCommand removeGreaterCommand = null;
+            try {
+                removeGreaterCommand
+                        = new RemoveGreaterCommand(
+                        main.getEditMusicBandDialogController().getMusicBand()
+                );
+            } catch (NumberFormatException e) {
+                alert.setContentText("Argument must be integer.");
+            } catch (IllegalArgumentException e) {
+                alert.setContentText(e.getMessage());
+            } finally {
+                if (!alert.getContentText().equals(""))
+                    alert.showAndWait();
+                else {
+                    System.out.println("blblbla");
+                    main.getClient().addRequest(new Request(removeGreaterCommand));
+                }
+            }
+
+        } else if (cmdRepr instanceof RemoveByKeyCommandRepresentation) {
+            RemoveByKeyCommand removeByKeyCommand = null;
+            try {
+                removeByKeyCommand
+                        = new RemoveByKeyCommand(
+                        Integer.parseInt(argumentField.getText())
+                );
+
+                if ( ! main.getOwnedElementsID().contains(removeByKeyCommand.getID())) {
+                    alert.setContentText(
+                            String.format(
+                                    "You can't remove element with ID : '%s' as you don't own it.",
+                                    removeByKeyCommand.getID()
+                            )
+                    );
+                }
+
+            } catch (NumberFormatException e) {
+                alert.setContentText("Argument must be integer.");
+            } catch (IllegalArgumentException e) {
+                alert.setContentText(e.getMessage());
+            } finally {
+                if (!alert.getContentText().equals(""))
+                    alert.showAndWait();
+                else {
+                    System.out.println("blblbla");
+                    main.getClient().addRequest(new Request(removeByKeyCommand));
+                }
+            }
+
+        } else if (cmdRepr instanceof RemoveAllByGenreCommandRepresentation) {
+            RemoveAllByGenreCommand removeAllByGenreCommand = null;
+            try {
+                removeAllByGenreCommand
+                        = new RemoveAllByGenreCommand(
+                        MusicGenre.valueOf(argumentField.getText())
+                );
+            } catch (NumberFormatException e) {
+                alert.setContentText("Argument must be integer.");
+            } catch (IllegalArgumentException e) {
+                alert.setContentText(e.getMessage());
+            } finally {
+                if (!alert.getContentText().equals(""))
+                    alert.showAndWait();
+                else {
+                    System.out.println("blblbla");
+                    main.getClient().addRequest(new Request(removeAllByGenreCommand));
+                }
+            }
+
+        } else if (cmdRepr instanceof MaxByFrontManCommandRepresentation) {
+            main.getClient().addRequest(new Request(new MaxByFrontManCommand()));
+
+        } else if (cmdRepr instanceof InsertCommandRepresentation) {
+            InsertCommand insertCommand = null;
+            try {
+                insertCommand
+                        = new InsertCommand(
+                        Integer.parseInt(argumentField.getText()),
+                        main.getEditMusicBandDialogController().getMusicBand()
+                );
+            } catch (NumberFormatException e) {
+                alert.setContentText("Argument must be integer.");
+            } catch (IllegalArgumentException e) {
+                alert.setContentText(e.getMessage());
+            } finally {
+                if (!alert.getContentText().equals(""))
+                    alert.showAndWait();
+                else {
+                    System.out.println("blblbla");
+                    main.getClient().addRequest(new Request(insertCommand));
+                }
+            }
+        } else if (cmdRepr instanceof InfoCommandRepresentation) {
+            main.getClient().addRequest(new Request(new InfoCommand()));
+
+        } else if (cmdRepr instanceof HelpCommandRepresentation) {
+            main.getClient().addRequest(new Request(new HelpCommand()));
+
+        } else if (cmdRepr instanceof FilterGreaterThanSinglesCountCommandRepresentation) {
+            FilterGreaterThanSinglesCountCommand filterGreaterThanSinglesCountCommand = null;
+            try {
+                filterGreaterThanSinglesCountCommand
+                        = new FilterGreaterThanSinglesCountCommand(
+                        Integer.parseInt(argumentField.getText())
+                );
+            } catch (NumberFormatException e) {
+                alert.setContentText("Argument must be integer.");
+            } catch (IllegalArgumentException e) {
+                alert.setContentText(e.getMessage());
+            } finally {
+                if (!alert.getContentText().equals(""))
+                    alert.showAndWait();
+                else {
+                    System.out.println("blblbla");
+                    main.getClient().addRequest(new Request(filterGreaterThanSinglesCountCommand));
+                }
+            }
+
+        } else if (cmdRepr instanceof ExecuteScriptCommandRepresentation) {
+            ExecuteScriptCommand executeScriptCommand = null;
+            try {
+                executeScriptCommand
+                        = new ExecuteScriptCommand(
+                        argumentField.getText()
+                );
+            } catch (NumberFormatException e) {
+                alert.setContentText("Argument must be integer.");
+            } catch (IllegalArgumentException e) {
+                alert.setContentText(e.getMessage());
+            } finally {
+                if (!alert.getContentText().equals(""))
+                    alert.showAndWait();
+                else {
+                    System.out.println("blblbla");
+                    main.getClient().addRequest(new Request(executeScriptCommand));
+                }
+            }
+        } else if (cmdRepr instanceof ClearCommandRepresentation) {
+            main.getClient().addRequest(new Request(new ClearCommand()));
+        }
     }
 
 
@@ -495,7 +769,11 @@ public class CollectionOverviewController {
     }
 
 
+//----------------------------------------------------------------------------------------------------------------------
+
+
     // Getters and setters
+
 
     public void setMain(Main main) {
 
