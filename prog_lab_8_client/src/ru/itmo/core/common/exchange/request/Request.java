@@ -1,106 +1,91 @@
 package ru.itmo.core.common.exchange.request;
 
-import ru.itmo.core.common.exchange.ExchangeType;
+
+import ru.itmo.core.common.exchange.User;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.PriorityQueue;
+
 
 
 public class Request implements Serializable {
 
 
-//    private User user;
+    private User user;
+
+    private PriorityQueue<ClientRequest> commandQueue
+            = new PriorityQueue<>();
+
     private InetAddress clientInetAddress;
-    private int clientPort;
-
-    private ExchangeType requestType;
-    private CommandRequest commandRequest;
-    private ServiceRequest serviceRequest;
+    private int port;
 
 
-
-    public Request() {}
-
-
-    public Request(CommandRequest commandRequest) {
-        this.setCommandRequest(commandRequest);
+    public Request(PriorityQueue<ClientRequest> commandQueue) {
+        this.commandQueue = commandQueue;
     }
 
 
-    public Request(ServiceRequest serviceRequest) {
-        this.setServiceRequest(serviceRequest);
+    public Request(ClientRequest command) {
+        addCommand(command);
     }
 
 
+    public Request(ClientRequest... commands) {
 
-
-//    public User getUser() {
-//        if (commandRequest != null) return commandRequest.getUser();
-//        if (serviceRequest != null) return serviceRequest.getUser();
-//        return null;
-//    }
-
-    public ExchangeType getRequestType() {
-        return requestType;
+        Arrays.stream(commands).forEach(
+                this::addCommand
+        );
     }
 
-    public CommandRequest getCommandRequest() {
-        return commandRequest;
+
+    public void addCommand(ClientRequest command) {
+        commandQueue.add(command);
     }
 
-    public Request setCommandRequest(CommandRequest commandRequest) {
-        this.commandRequest = commandRequest;
-        this.serviceRequest = null;
-        this.requestType = ExchangeType.COMMAND_EXCHANGE;
 
-        return this;
+    public User getUser() {
+        return user;
     }
 
-    public ServiceRequest getServiceRequest() {
-        return serviceRequest;
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Request setServiceRequest(ServiceRequest serviceRequest) {
-        this.serviceRequest = serviceRequest;
-        this.commandRequest = null;
-        this.requestType = ExchangeType.SERVICE_EXCHANGE;
-
-        return this;
-    }
 
     public InetAddress getClientInetAddress() {
-
         return clientInetAddress;
     }
 
-    public Request setClientInetAddress(InetAddress clientInetAddress) {
+
+    public void setClientInetAddress(InetAddress clientInetAddress) {
         this.clientInetAddress = clientInetAddress;
-
-        return this;
     }
 
-    public int getClientPort() {
 
-        return clientPort;
+    public int getPort() {
+        return port;
     }
 
-    public Request setClientPort(int clientPort) {
-        this.clientPort = clientPort;
 
-        return this;
+    public void setPort(int port) {
+
+        if (port < 0)
+            throw new IllegalArgumentException(String.format(
+                    "Invalid port : '%s'.",
+                    port)
+            );
+
+        this.port = port;
+
     }
 
-    @Override
-    public String toString() {
-        return String.format(
-                "Request {" +
-                "\n    clientInetAddress = '%s'" +
-                "\n    clientPort = ...... '%s'" +
-                "\n    requestType = ..... '%s'" +
-                "\n    serviceRequest = .. '%s" +
-                "\n    commandRequest = .. '%s" +
-                "\n}" +
-                "\n",
-                clientInetAddress, clientPort, requestType, serviceRequest, commandRequest);
+    public PriorityQueue<ClientRequest> getCommandQueue() {
+        return commandQueue;
     }
+
+
+
 }

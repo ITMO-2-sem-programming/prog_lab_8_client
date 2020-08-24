@@ -11,14 +11,15 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+
 import ru.itmo.UI.Main;
-import ru.itmo.core.command.userCommand.command.*;
-import ru.itmo.core.command.userCommand.command.representation.*;
+import ru.itmo.core.command.representation.*;
 import ru.itmo.core.common.classes.Color;
 import ru.itmo.core.common.classes.Country;
 import ru.itmo.core.common.classes.MusicBand;
 import ru.itmo.core.common.classes.MusicGenre;
-import ru.itmo.core.exchangeNew.Request;
+import ru.itmo.core.common.exchange.request.clientCommand.userCommand.*;
+import ru.itmo.core.common.exchange.request.Request;
 
 import java.util.Date;
 
@@ -147,12 +148,7 @@ public class CollectionOverviewController {
 
     }
 
-    // TODO: 20.08.2020
-    //  Прописать функционал редакторов Муз Банды,
-    //  Научить их добавлять реквесты в очередь клиента
-    //  Добавить отображение команд в КомбоБох
-    //  Добавить соответствующую реакцию на выбранную команду, которая (реакция) выражается в блокировки полей для тех аргументов , которые команда не принимает.
-    //
+
     private void initializeAfterMainSet() {
 
         fillCollectionTable();
@@ -166,11 +162,10 @@ public class CollectionOverviewController {
     }
 
 
-    // TODO: 8/18/20
     private void initElements() {
 
         initCollectionTable();
-        initComboBoxes(); // TODO: 8/18/20
+        initComboBoxes();
     }
 
 
@@ -399,13 +394,76 @@ public class CollectionOverviewController {
 
     @FXML
     private void handleEditChosenElement() {
-        // TODO: 21.08.2020
+
+        MusicBand selectedElement = collectionTable.getSelectionModel().getSelectedItem();
+
+        if (selectedElement == null) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.initOwner(this.stage);
+            alert.setTitle("No selection");
+            alert.setHeaderText("No element selected");
+            alert.setContentText("Please select an element in the table");
+
+            alert.showAndWait();
+
+        } else {
+
+            if ( ! main.getOwnedElementsID().contains(selectedElement.getId())) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.initOwner(this.stage);
+                alert.setTitle("Incorrect data");
+                alert.setHeaderText("Impossible operation");
+                alert.setContentText("You can't edit chosen element as you don't own it.");
+
+                alert.showAndWait();
+
+            } else {
+
+                EditMusicBandDialogController editMusicBandDialogController = main.loadEditMusicBandDialog();
+                editMusicBandDialogController.setMusicBand(selectedElement);
+                Stage stage = editMusicBandDialogController.getStage();
+                stage.initOwner(this.stage);
+
+                stage.showAndWait();
+
+                if ( ! (editMusicBandDialogController.getMusicBand() == null) ) {
+                    main.getClient().addRequest(new Request(new UpdateCommand(selectedElement.getId(), selectedElement)));
+                }
+            }
+        }
     }
 
 
     @FXML
     private void handleRemoveChosenElementButton() {
-        // TODO: 21.08.2020
+
+        MusicBand selectedElement = collectionTable.getSelectionModel().getSelectedItem();
+
+        if (selectedElement == null) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.initOwner(this.stage);
+            alert.setTitle("No selection");
+            alert.setHeaderText("No element selected");
+            alert.setContentText("Please select an element in the table");
+
+            alert.showAndWait();
+
+        } else {
+
+            if ( ! main.getOwnedElementsID().contains(selectedElement.getId())) {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.initOwner(this.stage);
+                alert.setTitle("Incorrect data");
+                alert.setHeaderText("Impossible operation");
+                alert.setContentText("You can't edit chosen element as you don't own it.");
+
+                alert.showAndWait();
+
+            } else {
+
+                main.getClient().addRequest(new Request(new RemoveByKeyCommand(selectedElement.getId())));
+            }
+        }
     }
 
 
@@ -434,9 +492,7 @@ public class CollectionOverviewController {
        editMusicBandDialogController.setMusicBand(null);
 
         stage.showAndWait();
-        //TODO
-        // Our MusicBand :
-        //System.out.println(editMusicBandDialogController.getMusicBand());
+
     }
 
 

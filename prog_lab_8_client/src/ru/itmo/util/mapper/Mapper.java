@@ -2,7 +2,7 @@ package ru.itmo.util.mapper;
 
 
 import ru.itmo.util.HashMapStrictKey;
-import ru.itmo.util.mapper.exceptions.InvalidMappingRangeException;
+import ru.itmo.util.mapper.exception.InvalidMappingRangeException;
 
 public class Mapper {
 

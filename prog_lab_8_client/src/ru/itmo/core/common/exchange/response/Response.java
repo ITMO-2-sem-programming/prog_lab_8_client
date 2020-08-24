@@ -1,117 +1,79 @@
 package ru.itmo.core.common.exchange.response;
-import ru.itmo.core.common.exchange.ExchangeType;
 
-import java.io.Serializable;
+import ru.itmo.core.common.exchange.request.ClientRequest;
+
 import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.PriorityQueue;
 
 
-public class Response implements Serializable {
 
+public class Response {
+
+
+    private PriorityQueue<ClientRequest> commandQueue
+            = new PriorityQueue<>();
 
     private InetAddress clientInetAddress;
-    private int clientPort;
-    private ExchangeType responseType;
-    private CommandResponse commandResponse;
-    private ServiceResponse serviceResponse;
+    private int port;
 
 
-
-    public Response() {}
-
-
-    public Response(CommandResponse commandResponse) {
-        setCommandResponse(commandResponse);
+    public Response(PriorityQueue<ClientRequest> commandQueue) {
+        this.commandQueue = commandQueue;
     }
 
 
-    public Response(ServiceResponse serviceResponse) {
-        setServiceResponse(serviceResponse);
+    public Response(ClientRequest command) {
+        addCommand(command);
     }
 
 
-    public Response(InetAddress clientInetAddress, int clientPort, CommandResponse commandResponse) {
-        setClientInetAddress(clientInetAddress);
-        setClientPort(clientPort);
-        setCommandResponse(commandResponse);
+    public Response(ClientRequest... commands) {
+
+        Arrays.stream(commands).forEach(
+                this::addCommand
+        );
     }
 
 
-    public Response(InetAddress clientInetAddress, int clientPort, ServiceResponse serviceResponse) {
-        setClientInetAddress(clientInetAddress);
-        setClientPort(clientPort);
-        setServiceResponse(serviceResponse);
+    public void addCommand(ClientRequest command) {
+        commandQueue.add(command);
     }
 
 
-
-
-//    public User getUser() {
-//        if (commandResponse != null) return commandResponse.getUser();
-//        if (serviceResponse != null) return serviceResponse.getUser();
-//        return null;
-//    }
 
     public InetAddress getClientInetAddress() {
-
         return clientInetAddress;
     }
 
-    public Response setClientInetAddress(InetAddress clientInetAddress) {
+
+    public void setClientInetAddress(InetAddress clientInetAddress) {
         this.clientInetAddress = clientInetAddress;
-
-        return this;
-    }
-
-    public int getClientPort() {
-
-        return clientPort;
-    }
-
-    public Response setClientPort(int clientPort) {
-        this.clientPort = clientPort;
-
-        return this;
-    }
-
-    public ExchangeType getResponseType() {
-        return responseType;
-    }
-
-    public CommandResponse getCommandResponse() {
-        return commandResponse;
-    }
-
-    public Response setCommandResponse(CommandResponse commandResponse) {
-        this.commandResponse = commandResponse;
-        this.serviceResponse = null;
-        this.responseType = ExchangeType.COMMAND_EXCHANGE;
-
-        return this;
-    }
-
-    public ServiceResponse getServiceResponse() {
-        return serviceResponse;
-    }
-
-    public Response setServiceResponse(ServiceResponse serviceResponse) {
-        this.serviceResponse = serviceResponse;
-        this.commandResponse = null;
-        this.responseType = ExchangeType.SERVICE_EXCHANGE;
-        return this;
     }
 
 
-    @Override
-    public String toString() {
-        return String.format(
-                "Response {" +
-                "\n    clientInetAddress = '%s'" +
-                "\n    clientPort = ...... '%s'" +
-                "\n    responseType = .... '%s'" +
-                "\n    serviceResponse = . '%s" +
-                "\n    commandResponse = . '%s" +
-                "\n}" +
-                "\n",
-                clientInetAddress, clientPort, responseType, serviceResponse, commandResponse);
+    public int getPort() {
+        return port;
     }
+
+
+    public void setPort(int port) {
+
+        if (port < 0)
+            throw new IllegalArgumentException(String.format(
+                    "Invalid port : '%s'.",
+                    port)
+            );
+
+        this.port = port;
+
+    }
+
+    public PriorityQueue<ClientRequest> getCommandQueue() {
+        return commandQueue;
+    }
+
+
+
 }
+

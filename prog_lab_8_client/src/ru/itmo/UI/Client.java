@@ -2,7 +2,10 @@ package ru.itmo.UI;
 
 
 
-import ru.itmo.core.exchangeNew.Request;
+import ru.itmo.core.common.exchange.request.Request;
+import ru.itmo.core.common.exchange.User;
+import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.seviceCommandResponse.ServiceCommandResponse;
+import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.userCommandResponse.UserCommandResponse;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -12,12 +15,17 @@ public class Client {
 
 
 
+    private User user;
+
+
     private final int queueCapacity
             = 10;
 
 //    ArrayBlockingQueue<> responsesQueue = new ArrayBlockingQueue<>(queueCapacity);
     private final ArrayBlockingQueue<Request> requestsQueue = new ArrayBlockingQueue<>(queueCapacity);
-
+    // TODO: 24.08.2020
+    private final ArrayBlockingQueue<UserCommandResponse> userCommandResponsesQueue = new ArrayBlockingQueue<>(queueCapacity);
+    private final ArrayBlockingQueue<ServiceCommandResponse> serviceCommandResponsesQueue = new ArrayBlockingQueue<>(queueCapacity);
 
     
     public Client() {
@@ -35,6 +43,8 @@ public class Client {
                 "I've got new Request..." +
                 "\nRequests list : " +
                 "\n" + requestsQueue.toString());
+
+        request.setUser(this.user);
         return requestsQueue.offer(request);
     }
 
@@ -46,6 +56,16 @@ public class Client {
 
     public ArrayBlockingQueue<Request> getRequestsQueue() {
         return requestsQueue;
+    }
+
+
+    public User getUser() {
+        return user;
+    }
+
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
 
