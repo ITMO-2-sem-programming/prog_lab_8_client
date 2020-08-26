@@ -14,7 +14,7 @@ public class InsertCommandRepresentation extends CommandRepresentation {
                         "\n   First argument:  key     (Integer)" +
                         "\n   Second argument: element (MusicBand)" +
                         "\n",
-                true,
+                false,
                 true
         );
     }

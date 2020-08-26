@@ -44,8 +44,9 @@ public class Main extends Application {
     public Main() {
 
 
-        client = new Client(); // TODO: 20.08.2020 Some checks here
+        client = new Client(this, "localhost", 44321); // TODO: 20.08.2020 Some checks here
 
+        client.start();
 
         ownedElementsID.addAll(3,4);
 
@@ -153,7 +154,7 @@ public class Main extends Application {
 //        initLoginDialogPane();
 
 //        initCollectionOverviewPane();
-        collectionOverviewController.getStage().show();
+        loginDialogController.getStage().show();
 
 //        initEditMusicBandDialogPane();
 //        editMusicBandDialogController.setDialogStage(rootStage);
@@ -386,5 +387,9 @@ public class Main extends Application {
 
     public ObservableList<Integer> getOwnedElementsID() {
         return ownedElementsID;
+    }
+
+    public void setOwnedElementsID(ObservableList<Integer> ownedElementsID) {
+        this.ownedElementsID = ownedElementsID;
     }
 }

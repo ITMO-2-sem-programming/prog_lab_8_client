@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="244.0" prefWidth="452.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.itmo.UI.controller.LoginDialogController">
+<AnchorPane fx:id="pane" prefHeight="244.0" prefWidth="452.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.itmo.UI.controller.LoginDialogController">
    <children>
       <GridPane layoutX="27.0" layoutY="75.0" prefHeight="138.0" prefWidth="394.0">
         <columnConstraints>
@@ -38,11 +38,11 @@
                   <Font name="Bitstream Vera Sans Mono Bold" size="22.0" />
                </font>
             </Label>
-            <TextField promptText="Login" GridPane.columnIndex="1" />
+            <TextField fx:id="loginField" promptText="Login" GridPane.columnIndex="1" />
             <Separator prefWidth="200.0" GridPane.columnSpan="2" GridPane.rowIndex="1" />
             <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <left>
-                  <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="76.0" text="Authorise" BorderPane.alignment="CENTER">
+                  <Button onAction="#handleAuthoriseButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="76.0" text="Authorise" BorderPane.alignment="CENTER">
                      <effect>
                         <DropShadow blurType="TWO_PASS_BOX" color="TEAL" />
                      </effect></Button>
@@ -57,7 +57,7 @@
                   <Insets top="25.0" />
                </GridPane.margin>
             </BorderPane>
-            <PasswordField promptText="Password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <PasswordField fx:id="passwordField" promptText="Password" GridPane.columnIndex="1" GridPane.rowIndex="2" />
          </children>
       </GridPane>
       <Label layoutX="27.0" layoutY="24.0" prefHeight="32.0" prefWidth="429.0" text="Authorisation &amp; Registration">

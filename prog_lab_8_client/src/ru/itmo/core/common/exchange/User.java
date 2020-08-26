@@ -3,7 +3,6 @@ package ru.itmo.core.common.exchange;
 import java.io.Serializable;
 
 
-
 public class User implements Serializable {
 
 

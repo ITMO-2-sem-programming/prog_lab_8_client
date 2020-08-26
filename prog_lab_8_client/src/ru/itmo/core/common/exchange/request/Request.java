@@ -1,47 +1,39 @@
 package ru.itmo.core.common.exchange.request;
 
 
+
+import ru.itmo.core.common.exchange.Client;
 import ru.itmo.core.common.exchange.User;
 
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.util.Arrays;
-import java.util.PriorityQueue;
-
 
 
 public class Request implements Serializable {
 
 
+    private Client client;
     private User user;
-
-    private PriorityQueue<ClientRequest> commandQueue
-            = new PriorityQueue<>();
-
-    private InetAddress clientInetAddress;
-    private int port;
+    private ClientRequest clientRequest;
 
 
-    public Request(PriorityQueue<ClientRequest> commandQueue) {
-        this.commandQueue = commandQueue;
+
+    public Request(ClientRequest clientRequest) {
+        setClientRequest(clientRequest);
     }
 
 
-    public Request(ClientRequest command) {
-        addCommand(command);
+
+
+    public Client getClient() {
+        return client;
     }
 
+    public void setClient(Client client) {
 
-    public Request(ClientRequest... commands) {
+        if (client == null)
+            throw new IllegalArgumentException("Invalid client value : 'null'.");
 
-        Arrays.stream(commands).forEach(
-                this::addCommand
-        );
-    }
-
-
-    public void addCommand(ClientRequest command) {
-        commandQueue.add(command);
+        this.client = client;
     }
 
 
@@ -51,39 +43,25 @@ public class Request implements Serializable {
 
 
     public void setUser(User user) {
+
+        if (user == null)
+            throw new IllegalArgumentException("Invalid user value : 'null'.");
+
         this.user = user;
     }
 
 
-    public InetAddress getClientInetAddress() {
-        return clientInetAddress;
+    public ClientRequest getClientRequest() {
+        return clientRequest;
     }
 
 
-    public void setClientInetAddress(InetAddress clientInetAddress) {
-        this.clientInetAddress = clientInetAddress;
-    }
+    private void setClientRequest(ClientRequest clientRequest) {
 
+        if (clientRequest == null)
+            throw new IllegalArgumentException("Invalid clientRequest value : 'null'.");
 
-    public int getPort() {
-        return port;
-    }
-
-
-    public void setPort(int port) {
-
-        if (port < 0)
-            throw new IllegalArgumentException(String.format(
-                    "Invalid port : '%s'.",
-                    port)
-            );
-
-        this.port = port;
-
-    }
-
-    public PriorityQueue<ClientRequest> getCommandQueue() {
-        return commandQueue;
+        this.clientRequest = clientRequest;
     }
 
 

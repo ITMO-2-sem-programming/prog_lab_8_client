@@ -1,11 +1,14 @@
 package ru.itmo.core.connection;
 
 
+import ru.itmo.core.common.exchange.request.ClientRequest;
 import ru.itmo.core.common.exchange.request.Request;
 import ru.itmo.core.common.exchange.response.Response;
+import ru.itmo.core.common.exchange.response.ServerResponse;
 
 import java.io.IOException;
 import java.io.StreamCorruptedException;
+import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.BufferOverflowException;
@@ -23,32 +26,38 @@ public class ConnectionManager {
     private int bufferSize;
 
 
-    public ConnectionManager(String serverAddress, int serverPort) throws IOException {
+    public ConnectionManager(String serverAddress, int serverPort, int clientPort) {
 
         // bind client to any free port
 
         try {
 
             clientChannel = DatagramChannel.open();
-            clientChannel.socket().bind(null);
+
+            clientChannel.socket().bind(new InetSocketAddress(clientPort));
 
 //            System.out.println("Client address : " + clientChannel.getLocalAddress());
 
             clientChannel.configureBlocking(false);
         } catch (IOException e) {
-            throw new IOException("Error: Can't connect any free port on the client-side.");
+            throw new IllegalArgumentException("Error: Can't connect any free port on the client-side.");
         }
 
         try {
             serverSocketAddress = new InetSocketAddress(serverAddress, serverPort);
 //            clientChannel.connect(serverSocketAddress);
         } catch (IllegalArgumentException e) {
-            throw new IOException("Can't connect to server.\n    Reason: " + e.getMessage());
+            throw new IllegalArgumentException("Can't connect to server.\n    Reason: " + e.getMessage());
         }
 
         bufferSize = 65536;
 
         buffer = ByteBuffer.allocate(bufferSize);
+    }
+
+
+    public ConnectionManager(String serverAddress, int serverPort) {
+        this(serverAddress, serverPort, 0);
     }
 
 
@@ -71,24 +80,24 @@ public class ConnectionManager {
     }
 
 
-    public void sendRequest(Request request) throws IOException {
+    public void sendRequest(ClientRequest request) throws IOException {
         send(Serializer.toByteArray(request));
     }
 
 
     public byte[] receive() throws IOException {
         buffer = ByteBuffer.allocate(bufferSize);
-        SocketAddress readStatus = clientChannel.receive(buffer);
+        SocketAddress receiveStatus = clientChannel.receive(buffer);
 
-        if (readStatus == null)
-            throw new StreamCorruptedException("Error: Channel is empty. Can't read anything.");
+        if (receiveStatus == null)
+            throw new StreamCorruptedException("Error: Channel is empty. Nothing to read..");
 
         return buffer.array();
     }
 
 
-    public Response receiveResponse() throws IOException, ClassNotFoundException {
-        return (Response) Serializer.toObject(receive());
+    public ServerResponse receiveResponse() throws IOException, ClassNotFoundException {
+        return (ServerResponse) Serializer.toObject(receive());
     }
 
 

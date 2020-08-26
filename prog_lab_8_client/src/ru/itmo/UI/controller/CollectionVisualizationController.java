@@ -16,9 +16,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import ru.itmo.UI.Main;
-import ru.itmo.core.common.exchange.request.clientCommand.userCommand.UpdateCommand;
 import ru.itmo.core.common.classes.MusicBand;
 import ru.itmo.core.common.exchange.request.Request;
+import ru.itmo.core.common.exchange.request.clientRequest.userCommandRequest.UpdateCommandRequest;
 import ru.itmo.util.CirclePositioner;
 import ru.itmo.util.mapper.Mapper;
 import ru.itmo.util.mapper.MappingRange;
@@ -109,8 +109,8 @@ public class CollectionVisualizationController {
 
 
                     if (newMusicBand != null) {
-                        main.getClient().addRequest(new Request(
-                                new UpdateCommand(newMusicBand.getId(), newMusicBand)));
+                        main.getClient().addRequest(
+                                new UpdateCommandRequest(newMusicBand.getId(), newMusicBand));
                     }
 
                 });
