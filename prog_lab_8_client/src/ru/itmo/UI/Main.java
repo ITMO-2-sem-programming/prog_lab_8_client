@@ -8,8 +8,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import ru.itmo.UI.controller.*;
 import ru.itmo.core.common.classes.*;
+import ru.itmo.core.common.exchange.request.clientRequest.serviceRequest.LoadCollectionServiceRequest;
+import ru.itmo.core.common.exchange.request.clientRequest.serviceRequest.LoadOwnedElementsServiceRequest;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.PriorityQueue;
 
 
@@ -48,80 +51,80 @@ public class Main extends Application {
 
         client.start();
 
-        ownedElementsID.addAll(3,4);
-
-        collection.add(
-                new MusicBand(
-                        1,
-                        "A",
-                        new Coordinates(1,2),
-                        1,
-                        1,
-                        MusicGenre.PROGRESSIVE_ROCK,
-                        new Person(
-                                "A",
-                                190L,
-                                Color.WHITE,
-                                Country.GERMANY,
-                                new Location(1,
-                                        2,
-                                        "A"
-                                )
-                        )
-                ));
-
-//        Thread.sleep(200);
-
-        collection.add(
-                new MusicBand(
-                        2,
-                        "B",
-                        new Coordinates(3,4),
-                        2,
-                        2,
-                        MusicGenre.HIP_HOP,
-                        new Person(
-                                "B",
-                                null,
-                                null,
-                                null,
-                                new Location(3,
-                                        2,
-                                        "B"
-                                )
-                        )
-                ));
-
-        collection.add(
-                new MusicBand(
-                        3,
-                        "C",
-                        new Coordinates(5,6),
-                        3,
-                        3,
-                        MusicGenre.POST_ROCK,
-                        new Person(
-                                "C",
-                                195L,
-                                Color.GREEN,
-                                null,
-                                new Location(5,
-                                        6,
-                                        "C"
-                                )
-                        )
-                ));
-
-        collection.add(
-                new MusicBand(
-                        4,
-                        "D",
-                        new Coordinates(7,8),
-                        4,
-                        4,
-                        MusicGenre.POST_PUNK,
-                        null
-                ));
+//        ownedElementsID.addAll(3,4);
+//
+//        collection.add(
+//                new MusicBand(
+//                        1,
+//                        "A",
+//                        new Coordinates(1,2),
+//                        1,
+//                        1,
+//                        MusicGenre.PROGRESSIVE_ROCK,
+//                        new Person(
+//                                "A",
+//                                190L,
+//                                Color.WHITE,
+//                                Country.GERMANY,
+//                                new Location(1,
+//                                        2,
+//                                        "A"
+//                                )
+//                        )
+//                ));
+//
+////        Thread.sleep(200);
+//
+//        collection.add(
+//                new MusicBand(
+//                        2,
+//                        "B",
+//                        new Coordinates(3,4),
+//                        2,
+//                        2,
+//                        MusicGenre.HIP_HOP,
+//                        new Person(
+//                                "B",
+//                                null,
+//                                null,
+//                                null,
+//                                new Location(3,
+//                                        2,
+//                                        "B"
+//                                )
+//                        )
+//                ));
+//
+//        collection.add(
+//                new MusicBand(
+//                        3,
+//                        "C",
+//                        new Coordinates(5,6),
+//                        3,
+//                        3,
+//                        MusicGenre.POST_ROCK,
+//                        new Person(
+//                                "C",
+//                                195L,
+//                                Color.GREEN,
+//                                null,
+//                                new Location(5,
+//                                        6,
+//                                        "C"
+//                                )
+//                        )
+//                ));
+//
+//        collection.add(
+//                new MusicBand(
+//                        4,
+//                        "D",
+//                        new Coordinates(7,8),
+//                        4,
+//                        4,
+//                        MusicGenre.POST_PUNK,
+//                        null
+//                ));
     }
 
 
@@ -140,9 +143,9 @@ public class Main extends Application {
 
             loadLoginDialog();
             loadRoot();
-            loadCollectionOverview();
-            loadEditMusicBandDialog();
-            loadCollectionVisualization();
+//            loadCollectionOverview();
+//            loadEditMusicBandDialog();
+//            loadCollectionVisualization();
 
 
         } catch (IllegalArgumentException e) {
@@ -290,7 +293,7 @@ public class Main extends Application {
 
 
 
-    private CollectionOverviewController loadCollectionOverview() {
+    public CollectionOverviewController loadCollectionOverview() {
 
         try {
 
@@ -310,7 +313,7 @@ public class Main extends Application {
     }
 
 
-    private CollectionVisualizationController loadCollectionVisualization() {
+    public CollectionVisualizationController loadCollectionVisualization() {
 
         try {
 
@@ -327,6 +330,18 @@ public class Main extends Application {
             throw new IllegalArgumentException(e.getMessage());
         }
 
+    }
+
+    public void loadCollection() {
+        client.addRequest(
+                new LoadCollectionServiceRequest()
+        );
+    }
+
+    public void loadOwnedElementsID() {
+        client.addRequest(
+                new LoadOwnedElementsServiceRequest()
+        );
     }
 
 
@@ -383,6 +398,10 @@ public class Main extends Application {
 
     public ObservableList<MusicBand> getCollection() {
         return collection;
+    }
+
+    public void setCollection(List<MusicBand> collection) {
+        this.collection = FXCollections.observableArrayList(collection);
     }
 
     public ObservableList<Integer> getOwnedElementsID() {

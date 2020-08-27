@@ -136,16 +136,16 @@ public class CollectionVisualizationController {
 
     private void initializeAfterMainSet() {
 
-        main.getCollection().addListener(
-                (ListChangeListener<MusicBand>) c -> {
-                    visualize(false);
-                    System.out.println("CollectionVisualizationController :_ The list has been changed.");
-                }
-        );
+//        main.getCollection().addListener(
+//                (ListChangeListener<MusicBand>) c -> {
+//                    visualize(false);
+//                    System.out.println("CollectionVisualizationController :_ The list has been changed.");
+//                }
+//        );
     }
 
 
-    private void visualize(boolean animationEnabled) {
+    public void visualize(boolean animationEnabled) {
 
         CirclePositioner positioner = new CirclePositioner(120, 20, 6);
 

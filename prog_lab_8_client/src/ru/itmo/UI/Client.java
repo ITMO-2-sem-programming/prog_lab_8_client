@@ -2,7 +2,9 @@ package ru.itmo.UI;
 
 
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import ru.itmo.UI.controller.CollectionVisualizationController;
 import ru.itmo.core.common.exchange.request.ClientRequest;
 import ru.itmo.core.common.exchange.request.Request;
 import ru.itmo.core.common.exchange.User;
@@ -14,10 +16,7 @@ import ru.itmo.core.common.exchange.response.serverResponse.multidirectional.Rem
 import ru.itmo.core.common.exchange.response.serverResponse.multidirectional.UpdateElementResponse;
 import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.UnidirectionalResponse;
 import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.seviceResponse.ServiceResponse;
-import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.seviceResponse.background.AddOwnedElementsIDServiceResponse;
-import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.seviceResponse.background.BackgroundServiceResponse;
-import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.seviceResponse.background.LoadOwnedElementsIDServiceResponse;
-import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.seviceResponse.background.RemoveOwnedElementsIDServiceResponse;
+import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.seviceResponse.background.*;
 import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.userResponse.GeneralResponse;
 import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.userResponse.UserCommandResponse;
 import ru.itmo.core.connection.ConnectionManager;
@@ -76,7 +75,7 @@ public class Client {
             while (true) {
                 try {
                     ServerResponse response = responsesQueue.take();
-                    System.out.println("I've got response !");
+                    System.out.println("I've got response :" + response);
 
                     if (response instanceof MultidirectionalResponse) {
 
@@ -84,20 +83,27 @@ public class Client {
                             main.getCollection().add(((AddElementResponse) response).getElement());
                         } else if (response instanceof UpdateElementResponse) {
                             UpdateElementResponse updateElementResponse = (UpdateElementResponse) response;
-                            main.getCollection().removeIf((element) -> element.getId() == updateElementResponse.getElementID());
+                            main.getCollection().removeIf((element) -> element.getId().equals(updateElementResponse.getElementID()));
                             main.getCollection().add(updateElementResponse.getElement());
+                            CollectionVisualizationController collectionVisualizationController = main.getCollectionVisualizationController();;
+                            if (collectionVisualizationController != null) {
+                                collectionVisualizationController.visualize(false); // bad fix here // TODO: 27.08.2020  
+                            }
                         } else if (response instanceof RemoveElementsResponse) {
                             RemoveElementsResponse removeElementsResponse = (RemoveElementsResponse) response;
                             main.getCollection().removeIf((element) -> removeElementsResponse.getElementsID().contains(element.getId()));
                         }
 
                     } else if (response instanceof BackgroundServiceResponse) {
-                        if (response instanceof AddOwnedElementsIDServiceResponse) {
+                        if (response instanceof LoadCollectionServiceResponse) {
+                            LoadCollectionServiceResponse loadCollectionServiceResponse = (LoadCollectionServiceResponse) response;
+                            main.setCollection(loadCollectionServiceResponse.getCollection());
+                        } else if (response instanceof AddOwnedElementsIDServiceResponse) {
                             AddOwnedElementsIDServiceResponse addOwnedElementsIDServiceResponse = (AddOwnedElementsIDServiceResponse) response;
                             main.getOwnedElementsID().addAll(addOwnedElementsIDServiceResponse.getOwnedElementsID());
                         } else if (response instanceof LoadOwnedElementsIDServiceResponse) {
                             LoadOwnedElementsIDServiceResponse loadOwnedElementsIDServiceResponse = (LoadOwnedElementsIDServiceResponse) response;
-                            main.setOwnedElementsID((ObservableList<Integer>) loadOwnedElementsIDServiceResponse.getOwnedElementsID());
+                            main.setOwnedElementsID(FXCollections.observableArrayList(loadOwnedElementsIDServiceResponse.getOwnedElementsID()));
                         } else if (response instanceof RemoveOwnedElementsIDServiceResponse) {
                             RemoveOwnedElementsIDServiceResponse removeOwnedElementsIDServiceResponse = (RemoveOwnedElementsIDServiceResponse) response;
                             main.getOwnedElementsID().removeIf((element) -> removeOwnedElementsIDServiceResponse.getOwnedElementsID().contains(element));

@@ -19,6 +19,8 @@ import ru.itmo.core.common.classes.Country;
 import ru.itmo.core.common.classes.MusicBand;
 import ru.itmo.core.common.classes.MusicGenre;
 import ru.itmo.core.common.exchange.request.Request;
+import ru.itmo.core.common.exchange.request.clientRequest.serviceRequest.LoadCollectionServiceRequest;
+import ru.itmo.core.common.exchange.request.clientRequest.serviceRequest.LoadOwnedElementsServiceRequest;
 import ru.itmo.core.common.exchange.request.clientRequest.userCommandRequest.*;
 
 import java.util.Date;
@@ -143,8 +145,16 @@ public class CollectionOverviewController {
         stage.setTitle("Collection overview.");
         stage.setResizable(false);
 
+//        stage.setOnShowing(
+//                (event) -> {
+//                    loadCollection();
+//                    loadOwnedElementsID();
+//                }
+//        );
 
         initElements();
+
+
 
     }
 
@@ -386,7 +396,8 @@ public class CollectionOverviewController {
     @FXML
     private void handleVisualizeCollection() {
 
-        Stage stage = main.getCollectionVisualizationController().getStage();
+//        Stage stage = main.loadCollectionVisualization().getStage();
+        Stage stage = main.loadCollectionVisualization().getStage();
         stage.show();
 
     }

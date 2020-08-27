@@ -14,12 +14,17 @@ import ru.itmo.UI.Main;
 import ru.itmo.core.common.exchange.User;
 import ru.itmo.core.common.exchange.request.clientRequest.serviceRequest.AuthoriseUserServiceRequest;
 import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.seviceResponse.AuthorizeUserServiceResponse;
+import ru.itmo.core.encryption.Encryptor;
+import ru.itmo.core.encryption.SHA_224;
 
 
 public class LoginDialogController {
 
-    Main main;
-    Client client;
+    private Main main;
+    private Client client;
+
+    private final Encryptor encryptor
+            = new Encryptor(new SHA_224());
 
     @FXML
     private AnchorPane pane;
@@ -60,6 +65,7 @@ public class LoginDialogController {
         alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
 
+        User user;
 
         if (loginField.getText().isEmpty()) {
             alert.setContentText("Login field must be filled in.");
@@ -67,7 +73,7 @@ public class LoginDialogController {
         } else if (passwordField.getText().isEmpty()) {
             alert.setContentText("Password field must be filled in.");
         } else {
-            User user = new User(loginField.getText(), passwordField.getText());
+            user = new User(loginField.getText(), encryptor.encrypt(passwordField.getText()));
 
             client.addRequest(new AuthoriseUserServiceRequest(user));
 
@@ -76,8 +82,11 @@ public class LoginDialogController {
             if ( ! response.isAuthorized() ) {
                 alert.setContentText(response.getMessage());
             } else {
+                client.setUser(user);
                 stage.close();
-                main.getCollectionOverviewController().getStage().show();
+                main.loadCollection();
+                main.loadOwnedElementsID();
+                main.loadCollectionOverview().getStage().show();
             }
         }
 

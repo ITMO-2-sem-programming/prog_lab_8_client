@@ -27,7 +27,7 @@ public class EditMusicBandDialogController {
     @FXML
     private BorderPane pane;
 
-    private MusicBand mb
+    private MusicBand musicBand
             = null;
 //    private boolean submitButtonIsClicked
 //            = false;
@@ -110,7 +110,7 @@ public class EditMusicBandDialogController {
         
         stage.setOnCloseRequest( //// TODO: 8/18/20   Pay pay attention here 
                 event -> 
-                        mb = null
+                        musicBand = null
         );
 
         initElements();
@@ -170,7 +170,7 @@ public class EditMusicBandDialogController {
 
         try {
 
-            mb = createMusicBand();
+            musicBand = createMusicBand();
 
 
             //TODO посмотреть в сову ьфлукн как передавать Зукыт дальше
@@ -195,7 +195,7 @@ public class EditMusicBandDialogController {
 
         } catch (IllegalArgumentException e) {
 
-            mb = null;
+            musicBand = null;
 
             Alert alert = new Alert(Alert.AlertType.ERROR);
 
@@ -216,7 +216,7 @@ public class EditMusicBandDialogController {
 
     @FXML
     private void handleCancelButton() {
-        mb = null;
+        musicBand = null;
         stage.close();
     }
 
@@ -238,8 +238,12 @@ public class EditMusicBandDialogController {
 
         MusicBand mb = new MusicBand();
 
-        mb.setId(1);
+        if (musicBand != null) {
+            mb.setId(musicBand.getId());
+        } else {
+            mb.setId(1);
 
+        }
 
         try {
             mb.setName(nameField.getText());
@@ -390,20 +394,20 @@ public class EditMusicBandDialogController {
 
     private void setFields() {
 
-        if (this.mb == null) {
+        if (this.musicBand == null) {
             clearAllFields();
 
         } else {
-            idField.setText(mb.getId().toString());
-            nameField.setText(mb.getName());
-            coordXField.setText(String.valueOf(mb.getCoordinates().getX()));
-            coordYField.setText(String.valueOf(mb.getCoordinates().getY()));
-            creationDateField.setText(mb.getCreationDate().toString());
-            numberOfParticipantsField.setText(String.valueOf(mb.getNumberOfParticipants()));
-            singlesCountField.setText(String.valueOf(mb.getSinglesCount()));
-            musicGenreComboBox.setValue(mb.getGenre());
+            idField.setText(musicBand.getId().toString());
+            nameField.setText(musicBand.getName());
+            coordXField.setText(String.valueOf(musicBand.getCoordinates().getX()));
+            coordYField.setText(String.valueOf(musicBand.getCoordinates().getY()));
+            creationDateField.setText(musicBand.getCreationDate().toString());
+            numberOfParticipantsField.setText(String.valueOf(musicBand.getNumberOfParticipants()));
+            singlesCountField.setText(String.valueOf(musicBand.getSinglesCount()));
+            musicGenreComboBox.setValue(musicBand.getGenre());
 
-            if (mb.getFrontMan() == null) {
+            if (musicBand.getFrontMan() == null) {
 
                 frontManComboBox.getSelectionModel().select(FrontManComboBoxOptions.NULL);
                 processNullFrontMan();
@@ -411,13 +415,13 @@ public class EditMusicBandDialogController {
             } else {
 
                 frontManComboBox.getSelectionModel().select(FrontManComboBoxOptions.NOT_NULL);
-                frontManNameField.setText(processNullToString(mb.getFrontMan().getName()));
-                frontManHeightField.setText(processNullToString(mb.getFrontMan().getHeight()));
-                frontManHeirColorComboBox.setValue(mb.getFrontMan().getHeirColor());
-                frontManNationalityComboBox.setValue(mb.getFrontMan().getNationality());
-                frontManLocXField.setText(processNullToString(mb.getFrontMan().getLocation().getX()));
-                frontManLocYField.setText(processNullToString(mb.getFrontMan().getLocation().getY()));
-                frontManLocNameField.setText(processNullToString(mb.getFrontMan().getLocation().getName()));
+                frontManNameField.setText(processNullToString(musicBand.getFrontMan().getName()));
+                frontManHeightField.setText(processNullToString(musicBand.getFrontMan().getHeight()));
+                frontManHeirColorComboBox.setValue(musicBand.getFrontMan().getHeirColor());
+                frontManNationalityComboBox.setValue(musicBand.getFrontMan().getNationality());
+                frontManLocXField.setText(processNullToString(musicBand.getFrontMan().getLocation().getX()));
+                frontManLocYField.setText(processNullToString(musicBand.getFrontMan().getLocation().getY()));
+                frontManLocNameField.setText(processNullToString(musicBand.getFrontMan().getLocation().getName()));
             }
 
         }
@@ -481,12 +485,12 @@ public class EditMusicBandDialogController {
 
 
     public MusicBand getMusicBand() {
-        return mb;
+        return musicBand;
     }
 
 
     public void setMusicBand(MusicBand mb) {
-        this.mb = mb;
+        this.musicBand = mb;
         setFields();
     }
 
