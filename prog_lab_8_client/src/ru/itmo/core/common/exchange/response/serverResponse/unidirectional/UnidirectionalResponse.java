@@ -25,6 +25,13 @@ public abstract class UnidirectionalResponse extends ServerResponse {
 
 
 
+    public boolean errorOccurred() {
+        return this.status == CRStatus.ERROR;
+    }
+
+
+
+
     public CRStatus getStatus() {
         return status;
     }

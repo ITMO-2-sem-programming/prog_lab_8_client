@@ -22,6 +22,7 @@ import ru.itmo.core.common.exchange.request.Request;
 import ru.itmo.core.common.exchange.request.clientRequest.serviceRequest.LoadCollectionServiceRequest;
 import ru.itmo.core.common.exchange.request.clientRequest.serviceRequest.LoadOwnedElementsServiceRequest;
 import ru.itmo.core.common.exchange.request.clientRequest.userCommandRequest.*;
+import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.userResponse.GeneralResponse;
 
 import java.util.Date;
 
@@ -404,13 +405,15 @@ public class CollectionOverviewController {
 
 
     @FXML
-    private void handleEditChosenElement() {
+    private void handleEditChosenElementButton() {
 
         MusicBand selectedElement = collectionTable.getSelectionModel().getSelectedItem();
 
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.initOwner(this.stage);
+
+
         if (selectedElement == null) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.initOwner(this.stage);
             alert.setTitle("No selection");
             alert.setHeaderText("No element selected");
             alert.setContentText("Please select an element in the table");
@@ -420,9 +423,7 @@ public class CollectionOverviewController {
         } else {
 
             if ( ! main.getOwnedElementsID().contains(selectedElement.getId())) {
-                Alert alert = new Alert(AlertType.ERROR);
-                alert.initOwner(this.stage);
-                alert.setTitle("Incorrect data");
+
                 alert.setHeaderText("Impossible operation");
                 alert.setContentText("You can't edit chosen element as you don't own it.");
 
@@ -437,9 +438,34 @@ public class CollectionOverviewController {
 
                 stage.showAndWait();
 
-                if ( ! (editMusicBandDialogController.getMusicBand() == null) ) {
-                    main.getClient().addRequest(new UpdateCommandRequest(selectedElement.getId(), selectedElement));
+                MusicBand newMusicBand = editMusicBandDialogController.getMusicBand();
+
+                if ( newMusicBand != null ) {
+                    main.getClient().addRequest(
+                            new UpdateCommandRequest(newMusicBand.getId(), newMusicBand));
+
+                    GeneralResponse response = main.getClient().getUserCommandResponse();
+
+                    if (response.errorOccurred()) {
+                        alert.setContentText(response.getMessage());
+                        alert.showAndWait();
+                    } else {
+                        resultArea.setText(response.getMessage());
+                    }
                 }
+
+                // TODO: 28.08.2020
+//                GeneralResponse response = main.getClient().getUserCommandResponse();
+//
+//                if (response.errorOccurred()) {
+//                    Alert alert = new Alert(AlertType.ERROR);
+//                    alert.initOwner(this.stage);
+//                    alert.setTitle("Incorrect data");
+//                    alert.setHeaderText("Impossible operation");
+//                    alert.setContentText(response.getMessage());
+//
+//                    alert.showAndWait();
+//                }
             }
         }
     }
@@ -488,6 +514,10 @@ public class CollectionOverviewController {
 
         resultArea.setText(cmdRepr.getCommandDescription());
 
+        if (main.getEditMusicBandDialogController() != null) {
+            main.getEditMusicBandDialogController().setMusicBand(null);
+        }
+
     }
 
 
@@ -522,13 +552,23 @@ public class CollectionOverviewController {
 
         if (cmdRepr == null) return;
 
-        if (cmdRepr instanceof UpdateCommandRepresentation) {
+        if (cmdRepr instanceof UpdateCommandRepresentation) { // TODO: 28.08.2020
             UpdateCommandRequest updateCommandRequest = null;
+            int ID;
+            MusicBand newMusicBand;
             try {
+                ID  = Integer.parseInt(argumentField.getText());
+                newMusicBand = main.getEditMusicBandDialogController().getMusicBand();
+
+                if (newMusicBand != null) {
+                    newMusicBand.setId(ID);
+                }
+
+
                 updateCommandRequest
                         = new UpdateCommandRequest(
-                                Integer.parseInt(argumentField.getText()),
-                                main.getEditMusicBandDialogController().getMusicBand()
+                                ID,
+                                newMusicBand
                         );
 
                 if ( ! main.getOwnedElementsID().contains(updateCommandRequest.getID()) ) {
@@ -544,49 +584,87 @@ public class CollectionOverviewController {
                 alert.setContentText("Argument must be integer.");
             } catch (IllegalArgumentException e) {
                 alert.setContentText(e.getMessage());
+            } catch (NullPointerException e) {
+                alert.setContentText("Element can't be null.");
             } finally {
                 if ( ! alert.getContentText().equals("") )
                     alert.showAndWait();
                 else {
                     System.out.println("blblbla");
                     main.getClient().addRequest(updateCommandRequest);
+
+                    GeneralResponse response = main.getClient().getUserCommandResponse();
+
+                    if (response.errorOccurred()) {
+                        alert.setContentText(response.getMessage());
+                        alert.showAndWait();
+                    } else {
+                        resultArea.setText(response.getMessage());
+                    }
                 }
             }
 
         } else if (cmdRepr instanceof ShowCommandRepresentation) {
             main.getClient().addRequest(new ShowCommandRequest());
 
-        } else if (cmdRepr instanceof ReplaceIfLowerCommandRepresentation) {
-            ReplaceIfLowerCommandRequest replaceIfLowerCommandRequest = null;
-            try {
-                replaceIfLowerCommandRequest
-                        = new ReplaceIfLowerCommandRequest(
-                        Integer.parseInt(argumentField.getText()),
-                        main.getEditMusicBandDialogController().getMusicBand()
-                );
+            GeneralResponse response = main.getClient().getUserCommandResponse();
+            if (response.errorOccurred()) {
+                new Alert(AlertType.ERROR, response.getMessage()).showAndWait();
+            } else {
+                resultArea.setText(response.getMessage());
+            }
 
-                if ( ! main.getOwnedElementsID().contains(replaceIfLowerCommandRequest.getID())) {
+        } else if (cmdRepr instanceof ReplaceIfLowerCommandRepresentation) { // TODO: 28.08.2020
+
+            ReplaceIfLowerCommandRequest request = null;
+
+            int ID;
+            MusicBand newMusicBand;
+            try {
+                ID =  Integer.parseInt(argumentField.getText());
+                newMusicBand = main.getEditMusicBandDialogController().getMusicBand();
+
+                if (newMusicBand != null) {
+                    newMusicBand.setId(ID);
+                }
+
+
+                if ( ! main.getOwnedElementsID().contains(ID)) {
                     alert.setContentText(
                             String.format(
                                     "You can't replace the element with ID : '%s' as you don't own it.",
-                                    replaceIfLowerCommandRequest.getID()
+                                    ID
                             )
                     );
                 }
+
+                request = new ReplaceIfLowerCommandRequest(ID,newMusicBand);
+
             } catch (NumberFormatException e) {
                 alert.setContentText("Argument must be integer.");
             } catch (IllegalArgumentException e) {
                 alert.setContentText(e.getMessage());
+            } catch (NullPointerException e) {
+                alert.setContentText("Element can't be 'null'.");
             } finally {
-                if (!alert.getContentText().equals(""))
+                if ( ! alert.getContentText().equals(""))
                     alert.showAndWait();
                 else {
                     System.out.println("blblbla");
-                    main.getClient().addRequest(replaceIfLowerCommandRequest);
+                    main.getClient().addRequest(request);
+
+                    GeneralResponse response = main.getClient().getUserCommandResponse();
+
+                    if (response.errorOccurred()) {
+                        alert.setContentText(response.getMessage());
+                        alert.showAndWait();
+                    } else {
+                        resultArea.setText(response.getMessage());
+                    }
                 }
             }
 
-        } else if (cmdRepr instanceof RemoveLowerKeyCommandRepresentation) {
+        } else if (cmdRepr instanceof RemoveLowerKeyCommandRepresentation) { // TODO: 28.08.2020
             RemoveLowerKeyCommandRequest removeLowerKeyCommandRequest = null;
             try {
                 removeLowerKeyCommandRequest
@@ -603,10 +681,19 @@ public class CollectionOverviewController {
                 else {
                     System.out.println("blblbla");
                     main.getClient().addRequest(removeLowerKeyCommandRequest);
+
+                    GeneralResponse response = main.getClient().getUserCommandResponse();
+
+                    if (response.errorOccurred()) {
+                        alert.setContentText(response.getMessage());
+                        alert.showAndWait();
+                    } else {
+                        resultArea.setText(response.getMessage());
+                    }
                 }
             }
 
-        } else if (cmdRepr instanceof RemoveGreaterCommandRepresentation) {
+        } else if (cmdRepr instanceof RemoveGreaterCommandRepresentation) { // TODO: 28.08.2020
             RemoveGreaterCommandRequest removeGreaterCommandRequest = null;
             try {
                 removeGreaterCommandRequest
@@ -617,16 +704,27 @@ public class CollectionOverviewController {
                 alert.setContentText("Argument must be integer.");
             } catch (IllegalArgumentException e) {
                 alert.setContentText(e.getMessage());
+            } catch (NullPointerException e) {
+                alert.setContentText("Element can't be null.");
             } finally {
                 if (!alert.getContentText().equals(""))
                     alert.showAndWait();
                 else {
                     System.out.println("blblbla");
                     main.getClient().addRequest(removeGreaterCommandRequest);
+
+                    GeneralResponse response = main.getClient().getUserCommandResponse();
+
+                    if (response.errorOccurred()) {
+                        alert.setContentText(response.getMessage());
+                        alert.showAndWait();
+                    } else {
+                        resultArea.setText(response.getMessage());
+                    }
                 }
             }
 
-        } else if (cmdRepr instanceof RemoveByKeyCommandRepresentation) {
+        } else if (cmdRepr instanceof RemoveByKeyCommandRepresentation) { // TODO: 28.08.2020
             RemoveByKeyCommandRequest removeByKeyCommandRequest = null;
             try {
                 removeByKeyCommandRequest
@@ -653,57 +751,113 @@ public class CollectionOverviewController {
                 else {
                     System.out.println("blblbla");
                     main.getClient().addRequest(removeByKeyCommandRequest);
+
+                    GeneralResponse response = main.getClient().getUserCommandResponse();
+
+                    if (response.errorOccurred()) {
+                        alert.setContentText(response.getMessage());
+                        alert.showAndWait();
+                    } else {
+                        resultArea.setText(response.getMessage());
+                    }
                 }
             }
 
-        } else if (cmdRepr instanceof RemoveAllByGenreCommandRepresentation) {
+        } else if (cmdRepr instanceof RemoveAllByGenreCommandRepresentation) { // TODO: 28.08.2020
             RemoveAllByGenreCommandRequest removeAllByGenreCommandRequest = null;
             try {
                 removeAllByGenreCommandRequest
                         = new RemoveAllByGenreCommandRequest(
-                        MusicGenre.valueOf(argumentField.getText())
+                        MusicGenre.valueOf(argumentField.getText().toUpperCase())
                 );
             } catch (NumberFormatException e) {
                 alert.setContentText("Argument must be integer.");
             } catch (IllegalArgumentException e) {
-                alert.setContentText(e.getMessage());
+                alert.setContentText(MusicBand.musicBandFieldsDescription.get("genre"));
             } finally {
                 if (!alert.getContentText().equals(""))
                     alert.showAndWait();
                 else {
                     System.out.println("blblbla");
                     main.getClient().addRequest(removeAllByGenreCommandRequest);
+
+                    GeneralResponse response = main.getClient().getUserCommandResponse();
+
+                    if (response.errorOccurred()) {
+                        alert.setContentText(response.getMessage());
+                        alert.showAndWait();
+                    } else {
+                        resultArea.setText(response.getMessage());
+                    }
                 }
             }
 
         } else if (cmdRepr instanceof MaxByFrontManCommandRepresentation) {
             main.getClient().addRequest(new MaxByFrontManCommandRequest());
 
-        } else if (cmdRepr instanceof InsertCommandRepresentation) {
+            GeneralResponse response = main.getClient().getUserCommandResponse();
+            if (response.errorOccurred()) {
+                new Alert(AlertType.ERROR, response.getMessage()).showAndWait();
+            } else {
+                resultArea.setText(response.getMessage());
+            }
+
+
+        } else if (cmdRepr instanceof InsertCommandRepresentation) { // TODO: 28.08.2020
             InsertCommandRequest insertCommandRequest = null;
+
+            MusicBand newMusicBand = null;
             try {
+                newMusicBand = main.getEditMusicBandDialogController().getMusicBand();
                 insertCommandRequest
                         = new InsertCommandRequest(
-                        Integer.parseInt(argumentField.getText()),
-                        main.getEditMusicBandDialogController().getMusicBand()
+                        newMusicBand
                 );
             } catch (NumberFormatException e) {
                 alert.setContentText("Argument must be integer.");
             } catch (IllegalArgumentException e) {
                 alert.setContentText(e.getMessage());
+            } catch (NullPointerException e) {
+                alert.setContentText("Element can't be null.");
             } finally {
                 if (!alert.getContentText().equals(""))
                     alert.showAndWait();
                 else {
                     System.out.println("blblbla");
                     main.getClient().addRequest(insertCommandRequest);
+
+                    GeneralResponse response = main.getClient().getUserCommandResponse();
+
+                    if (response.errorOccurred()) {
+                        alert.setContentText(response.getMessage());
+                        alert.showAndWait();
+                    } else {
+                        resultArea.setText(response.getMessage());
+                    }
                 }
             }
+
         } else if (cmdRepr instanceof InfoCommandRepresentation) {
             main.getClient().addRequest(new InfoCommandRequest());
 
+            GeneralResponse response = main.getClient().getUserCommandResponse();
+            if (response.errorOccurred()) {
+                new Alert(AlertType.ERROR, response.getMessage()).showAndWait();
+            } else {
+                resultArea.setText(response.getMessage());
+            }
+
         } else if (cmdRepr instanceof HelpCommandRepresentation) {
             main.getClient().addRequest(new HelpCommandRequest());
+
+            GeneralResponse response = main.getClient().getUserCommandResponse();
+            if (response.errorOccurred()) {
+                System.out.println("sdfsfdsf");
+                new Alert(AlertType.ERROR, response.getMessage()).showAndWait();
+            } else {
+                System.out.println("dffffffff");
+                resultArea.setText(response.getMessage());
+            }
 
         } else if (cmdRepr instanceof FilterGreaterThanSinglesCountCommandRepresentation) {
             FilterGreaterThanSinglesCountCommandRequest filterGreaterThanSinglesCountCommandRequest = null;
@@ -722,6 +876,14 @@ public class CollectionOverviewController {
                 else {
                     System.out.println("blblbla");
                     main.getClient().addRequest(filterGreaterThanSinglesCountCommandRequest);
+
+                    GeneralResponse response = main.getClient().getUserCommandResponse();
+
+                    if (response.errorOccurred()) {
+                        new Alert(AlertType.ERROR, response.getMessage()).showAndWait();
+                    } else {
+                        resultArea.setText(response.getMessage());
+                    }
                 }
             }
 
@@ -744,8 +906,17 @@ public class CollectionOverviewController {
 //                    main.getClient().addRequest(new Request(executeScriptCommand));
 //                }
 //            }
-//        } else if (cmdRepr instanceof ClearCommandRepresentation) {
-//            main.getClient().addRequest(new Request(new ClearCommand()));
+        } else if (cmdRepr instanceof ClearCommandRepresentation) {
+            main.getClient().addRequest(new ClearCommandRequest());
+
+            GeneralResponse response = main.getClient().getUserCommandResponse();
+
+            if (response.errorOccurred()) {
+                alert.setContentText(response.getMessage());
+                alert.showAndWait();
+            } else {
+                resultArea.setText(response.getMessage());
+            }
         }
     }
 

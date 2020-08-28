@@ -1,6 +1,7 @@
 package ru.itmo.UI.controller;
 
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -10,6 +11,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
@@ -113,6 +115,13 @@ public class CollectionVisualizationController {
                                 new UpdateCommandRequest(newMusicBand.getId(), newMusicBand));
                     }
 
+//                    try { // TODO: 27.08.2020  
+//                        Thread.sleep(100);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    visualize(false);
+
                 });
 
 
@@ -136,16 +145,24 @@ public class CollectionVisualizationController {
 
     private void initializeAfterMainSet() {
 
-//        main.getCollection().addListener(
-//                (ListChangeListener<MusicBand>) c -> {
-//                    visualize(false);
-//                    System.out.println("CollectionVisualizationController :_ The list has been changed.");
-//                }
-//        );
+        main.getCollection().addListener(
+                (ListChangeListener<MusicBand>) c -> {
+                    Platform.runLater(() -> {
+                        visualize(false);
+                        System.out.println("CollectionVisualizationController :_ The list has been changed.");
+                    });
+
+                }
+        );
     }
 
 
     public void visualize(boolean animationEnabled) {
+
+        pane = new AnchorPane();
+        stage.getScene().setRoot(pane);
+
+//        pane.getChildren().clear(); // -----
 
         CirclePositioner positioner = new CirclePositioner(120, 20, 6);
 
@@ -205,6 +222,8 @@ public class CollectionVisualizationController {
                 }
             }
         }
+
+        pane.setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
 
 //        Circle circleDeleteLater = new Circle();
 //        circleDeleteLater.setFill(ownedElementsStrokeColor);

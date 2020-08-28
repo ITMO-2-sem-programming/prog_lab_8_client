@@ -13,7 +13,9 @@ import ru.itmo.UI.Client;
 import ru.itmo.UI.Main;
 import ru.itmo.core.common.exchange.User;
 import ru.itmo.core.common.exchange.request.clientRequest.serviceRequest.AuthoriseUserServiceRequest;
+import ru.itmo.core.common.exchange.request.clientRequest.serviceRequest.RegisterUserServiceRequest;
 import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.seviceResponse.AuthorizeUserServiceResponse;
+import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.seviceResponse.RegisterUserServiceResponse;
 import ru.itmo.core.encryption.Encryptor;
 import ru.itmo.core.encryption.SHA_224;
 
@@ -94,6 +96,48 @@ public class LoginDialogController {
             alert.showAndWait();
         }
     }
+
+
+    @FXML
+    private void handleRegisterButton() {
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Incorrect data.");
+
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        alert.getDialogPane().setMinWidth(Region.USE_PREF_SIZE);
+
+        User user;
+
+        if (loginField.getText().isEmpty()) {
+            alert.setContentText("Login field must be filled in.");
+
+        } else if (passwordField.getText().isEmpty()) {
+            alert.setContentText("Password field must be filled in.");
+        } else {
+            user = new User(loginField.getText(), encryptor.encrypt(passwordField.getText()));
+
+            client.addRequest(new RegisterUserServiceRequest(user));
+
+            RegisterUserServiceResponse response = (RegisterUserServiceResponse) client.getServiceResponse();
+
+            if ( ! response.isRegistered() ) {
+                alert.setContentText(response.getMessage());
+            } else {
+                client.setUser(user);
+                stage.close();
+                main.loadCollection();
+                main.loadOwnedElementsID();
+                main.loadCollectionOverview().getStage().show();
+            }
+        }
+
+        if ( ! alert.getContentText().equals("")) {
+            alert.showAndWait();
+        }
+    }
+
 
     public void setMain(Main main) {
         this.main = main;

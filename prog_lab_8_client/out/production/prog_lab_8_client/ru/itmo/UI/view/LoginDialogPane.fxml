@@ -48,7 +48,7 @@
                      </effect></Button>
                </left>
                <right>
-                <Button maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="76.0" text="Register" BorderPane.alignment="CENTER">
+                <Button onAction="#handleRegisterButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="76.0" text="Register" BorderPane.alignment="CENTER">
                      <effect>
                         <DropShadow blurType="TWO_PASS_BOX" color="TEAL" />
                      </effect></Button>

@@ -101,7 +101,7 @@
                               <Font size="16.0" />
                            </font>
                         </Button>
-                        <Button fx:id="editChosenElementButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleEditChosenElement" prefHeight="40.0" prefWidth="184.0" text="Edit chosen element">
+                        <Button fx:id="editChosenElementButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#handleEditChosenElementButton" prefHeight="40.0" prefWidth="184.0" text="Edit chosen element">
                            <HBox.margin>
                               <Insets left="45.0" />
                            </HBox.margin>

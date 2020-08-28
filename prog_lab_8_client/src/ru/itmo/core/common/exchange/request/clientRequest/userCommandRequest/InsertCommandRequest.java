@@ -11,7 +11,7 @@ public class InsertCommandRequest extends UserCommandRequest {
 
 
 
-    public InsertCommandRequest(Integer ID, MusicBand element) {
+    public InsertCommandRequest(MusicBand element) {
         setElement(element);
     }
 

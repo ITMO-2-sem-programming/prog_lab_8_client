@@ -24,7 +24,7 @@ import ru.itmo.core.connection.ConnectionManager;
 import java.io.IOException;
 import java.io.StreamCorruptedException;
 import java.util.concurrent.ArrayBlockingQueue;
-
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 
 public class Client {
@@ -35,7 +35,7 @@ public class Client {
 
 
     private final int queueCapacity
-            = 10;
+            = 100;
 
 //    ArrayBlockingQueue<> responsesQueue = new ArrayBlockingQueue<>(queueCapacity);
     private final ArrayBlockingQueue<ClientRequest> requestsQueue = new ArrayBlockingQueue<>(queueCapacity);
@@ -55,7 +55,7 @@ public class Client {
      * @throws IllegalArgumentException if connection to server can't ve established
      */
     public Client(Main main, String serverAddress, int serverPort) {
-
+//        new ConcurrentLinkedDeque<>().getFirst()
         this.main = main;
 
 
@@ -78,6 +78,7 @@ public class Client {
                     System.out.println("I've got response :" + response);
 
                     if (response instanceof MultidirectionalResponse) {
+                        System.out.println("MDR");
 
                         if (response instanceof AddElementResponse) {
                             main.getCollection().add(((AddElementResponse) response).getElement());
@@ -85,16 +86,17 @@ public class Client {
                             UpdateElementResponse updateElementResponse = (UpdateElementResponse) response;
                             main.getCollection().removeIf((element) -> element.getId().equals(updateElementResponse.getElementID()));
                             main.getCollection().add(updateElementResponse.getElement());
-                            CollectionVisualizationController collectionVisualizationController = main.getCollectionVisualizationController();;
-                            if (collectionVisualizationController != null) {
-                                collectionVisualizationController.visualize(false); // bad fix here // TODO: 27.08.2020  
-                            }
+//                            CollectionVisualizationController collectionVisualizationController = main.getCollectionVisualizationController();;
+//                            if (collectionVisualizationController != null) {
+//                                collectionVisualizationController.visualize(false); // bad fix here // TODO: 27.08.2020
+//                            }
                         } else if (response instanceof RemoveElementsResponse) {
                             RemoveElementsResponse removeElementsResponse = (RemoveElementsResponse) response;
                             main.getCollection().removeIf((element) -> removeElementsResponse.getElementsID().contains(element.getId()));
                         }
 
                     } else if (response instanceof BackgroundServiceResponse) {
+                        System.out.println("BSR");
                         if (response instanceof LoadCollectionServiceResponse) {
                             LoadCollectionServiceResponse loadCollectionServiceResponse = (LoadCollectionServiceResponse) response;
                             main.setCollection(loadCollectionServiceResponse.getCollection());
@@ -110,10 +112,14 @@ public class Client {
                         }
 
                     } else if (response instanceof UserCommandResponse) {
+                        System.out.println("Response is UCr.");
                         userCommandResponsesQueue.offer((GeneralResponse) response);
 
                     } else if (response instanceof ServiceResponse) {
+                        System.out.println("SR");
                         serviceResponsesQueue.offer((ServiceResponse) response);
+                    } else {
+                        System.out.println("Unknown response type : " + response);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -180,7 +186,9 @@ public class Client {
 
     public GeneralResponse getUserCommandResponse() {
         try {
-            return userCommandResponsesQueue.take();
+            GeneralResponse response = userCommandResponsesQueue.take();
+            System.out.println("I've отдал user command response response....");
+            return response;
         } catch (InterruptedException e) {
             e.printStackTrace();
             throw new IllegalArgumentException(e);
