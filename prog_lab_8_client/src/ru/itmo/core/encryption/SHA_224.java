@@ -56,8 +56,5 @@ public class SHA_224 implements EncryptionAlgorithm {
 //        System.out.println("\n" + s2 + " : " + encryptString(s2));
 //    }
 
-    public static void main(String[] args) {
-        System.out.println(new SHA_224().encrypt("maxi"));
-    }
 }
 

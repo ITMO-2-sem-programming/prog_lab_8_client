@@ -388,7 +388,7 @@ public class CollectionOverviewController {
                 new InfoCommandRepresentation(),
                 new HelpCommandRepresentation(),
                 new FilterGreaterThanSinglesCountCommandRepresentation(),
-                new ExecuteScriptCommandRepresentation(),
+//                new ExecuteScriptCommandRepresentation(),
                 new ClearCommandRepresentation()
         );
     }
