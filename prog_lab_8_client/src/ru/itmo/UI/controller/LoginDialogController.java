@@ -86,6 +86,7 @@ public class LoginDialogController {
             } else {
                 client.setUser(user);
                 stage.close();
+                main.getRootPaneController().setUserLabelText(user.getLogin());
                 main.loadCollection();
                 main.loadOwnedElementsID();
                 main.loadCollectionOverview().getStage().show();
@@ -127,6 +128,7 @@ public class LoginDialogController {
             } else {
                 client.setUser(user);
                 stage.close();
+                main.getRootPaneController().setUserLabelText(user.getLogin());
                 main.loadCollection();
                 main.loadOwnedElementsID();
                 main.loadCollectionOverview().getStage().show();

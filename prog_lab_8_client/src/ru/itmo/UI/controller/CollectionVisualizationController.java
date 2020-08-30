@@ -6,6 +6,8 @@ import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
@@ -21,6 +23,7 @@ import ru.itmo.UI.Main;
 import ru.itmo.core.common.classes.MusicBand;
 import ru.itmo.core.common.exchange.request.Request;
 import ru.itmo.core.common.exchange.request.clientRequest.userCommandRequest.UpdateCommandRequest;
+import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.userResponse.GeneralResponse;
 import ru.itmo.util.CirclePositioner;
 import ru.itmo.util.mapper.Mapper;
 import ru.itmo.util.mapper.MappingRange;
@@ -28,9 +31,11 @@ import ru.itmo.util.mapper.MappingRange;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
 
-public class CollectionVisualizationController {
+public class CollectionVisualizationController
+        implements Localizable {
 
     private Main main;
 
@@ -113,6 +118,14 @@ public class CollectionVisualizationController {
                     if (newMusicBand != null) {
                         main.getClient().addRequest(
                                 new UpdateCommandRequest(newMusicBand.getId(), newMusicBand));
+
+                        GeneralResponse response = main.getClient().getUserCommandResponse();
+
+                        if (response.errorOccurred()) {
+                            new Alert(AlertType.ERROR, response.getMessage()).showAndWait();
+                        } else {
+
+                        }
                     }
 
 //                    try { // TODO: 27.08.2020  
@@ -261,6 +274,12 @@ public class CollectionVisualizationController {
                         +
                         Math.random()
                                 * ( animationDelayHigherBoundMillis - animationDelayLowerBoundMillis );
+    }
+
+
+    @Override
+    public void localize(Locale locale) {
+// TODO: 29.08.2020
     }
 
 

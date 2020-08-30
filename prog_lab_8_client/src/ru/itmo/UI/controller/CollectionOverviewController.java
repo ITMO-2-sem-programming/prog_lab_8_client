@@ -24,15 +24,36 @@ import ru.itmo.core.common.exchange.request.clientRequest.serviceRequest.LoadOwn
 import ru.itmo.core.common.exchange.request.clientRequest.userCommandRequest.*;
 import ru.itmo.core.common.exchange.response.serverResponse.unidirectional.userResponse.GeneralResponse;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 
-public class CollectionOverviewController {
+public class CollectionOverviewController
+        implements Localizable {
 
 
     private Main main;
 
     private Stage stage;
+
+    private Locale locale;
+
+    private NumberFormat numberFormatter
+            = NumberFormat.getNumberInstance();
+
+    private String dateFormatPattern
+            = "yyyy-MM-dd HH:mm:ss";
+
+    private DateFormat dateFormatter
+            = DateFormat.getDateTimeInstance();
+
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -48,6 +69,21 @@ public class CollectionOverviewController {
 
     @FXML
     private AnchorPane pane;
+
+    @FXML
+    private Label filterTableLabel;
+
+    @FXML
+    private Label commandLabel;
+
+    @FXML
+    private Label argumentLabel;
+
+    @FXML
+    private Label elementLabel;
+
+    @FXML
+    private Label resultLabel;
 
     @FXML
     private TextField filterField;
@@ -88,19 +124,19 @@ public class CollectionOverviewController {
     private TableView<MusicBand> collectionTable;
 
     @FXML
-    private TableColumn<MusicBand, Integer> idColumn;
+    private TableColumn<MusicBand, String> idColumn;
 
     @FXML
     private TableColumn<MusicBand, String> nameColumn;
 
     @FXML
-    private TableColumn<MusicBand, Double> coordXColumn;
+    private TableColumn<MusicBand, String> coordXColumn;
 
     @FXML
     private TableColumn<MusicBand, Integer> coordYColumn;
 
     @FXML
-    private TableColumn<MusicBand, Date> creationDateColumn;
+    private TableColumn<MusicBand, String> creationDateColumn;
 
     @FXML
     private TableColumn<MusicBand, Long> numberOfParticipantsColumn;
@@ -183,9 +219,37 @@ public class CollectionOverviewController {
     private void initCollectionTable() {
 
         idColumn.setCellValueFactory(
-                cellData -> new SimpleIntegerProperty(cellData.getValue().getId()).asObject()
+                cellData ->
+                        new SimpleStringProperty(numberFormatter.format(cellData.getValue().getId())) // TODO: 30.08.2020 Changes here
 
 
+        );
+
+        //// TODO: 30.08.2020  Is it really needed HERE ?
+        idColumn.setComparator(
+                (id, otherId) -> {
+                    Integer integerId;
+                    Integer integerOtherId;
+
+                    if (id.equals("null")) {
+                        integerId = null;
+                    } else {
+                        integerId = Integer.parseInt(id);
+                    }
+
+                    if (otherId.equals("null")) {
+                        integerOtherId = null;
+                    } else {
+                        integerOtherId = Integer.parseInt(otherId);
+                    }
+
+                    if (integerId == null) {
+                        return -1;
+                    } else if (integerOtherId == null) {
+                        return 1;
+                    } else
+                        return Integer.compare(integerId, integerOtherId); // TODO: 30.08.2020 Javafx cell factory base comparator
+                }
         );
 
         nameColumn.setCellValueFactory(
@@ -195,7 +259,26 @@ public class CollectionOverviewController {
 
         coordXColumn.setCellValueFactory(
                 cellData ->
-                        new SimpleDoubleProperty(cellData.getValue().getCoordinates().getX()).asObject()
+                        new SimpleStringProperty(numberFormatter.format(cellData.getValue().getCoordinates().getX()))
+        );
+
+        coordXColumn.setComparator(
+                (coordX, otherCoordX) -> {
+                    double coordXDouble;
+                    double otherCoordXDouble;
+                    try {
+                        coordXDouble = numberFormatter.parse(coordX).doubleValue();
+                        otherCoordXDouble = numberFormatter.parse(otherCoordX).doubleValue();
+
+                        return Double.compare(coordXDouble, otherCoordXDouble);
+
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    return 0;
+                }
         );
 
         coordYColumn.setCellValueFactory(
@@ -203,9 +286,29 @@ public class CollectionOverviewController {
                         new SimpleIntegerProperty(cellData.getValue().getCoordinates().getY()).asObject()
         );
 
-        creationDateColumn.setCellValueFactory(
+        creationDateColumn.setCellValueFactory( // TODO: 30.08.2020 String -> Date
                 cellData ->
-                        new SimpleObjectProperty<>(cellData.getValue().getCreationDate())
+                        new SimpleStringProperty(dateFormatter.format(cellData.getValue().getCreationDate()))
+        );
+
+        creationDateColumn.setComparator(
+
+                (date, otherDate) -> {
+                    Date dateCreationDate;
+                    Date dateOtherCreationDate;
+
+
+                    try {
+                        dateCreationDate = dateFormatter.parse(date);
+                        dateOtherCreationDate = dateFormatter.parse(otherDate);
+                        return dateCreationDate.compareTo(dateOtherCreationDate);
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    return 0;
+                }
         );
 
         numberOfParticipantsColumn.setCellValueFactory(
@@ -499,6 +602,14 @@ public class CollectionOverviewController {
             } else {
 
                 main.getClient().addRequest(new RemoveByKeyCommandRequest(selectedElement.getId()));
+
+                GeneralResponse response = main.getClient().getUserCommandResponse();
+
+                if (response.errorOccurred()) {
+                    new Alert(AlertType.ERROR, response.getMessage()).showAndWait();
+                } else {
+                    resultArea.setText(response.getMessage());
+                }
             }
         }
     }
@@ -590,7 +701,6 @@ public class CollectionOverviewController {
                 if ( ! alert.getContentText().equals("") )
                     alert.showAndWait();
                 else {
-                    System.out.println("blblbla");
                     main.getClient().addRequest(updateCommandRequest);
 
                     GeneralResponse response = main.getClient().getUserCommandResponse();
@@ -1007,6 +1117,38 @@ public class CollectionOverviewController {
     }
 
 
+    @Override
+    public void localize(Locale locale) {
+        
+        numberFormatter = NumberFormat.getInstance(locale);
+        dateFormatter = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, locale);
+
+        initCollectionTable();
+
+        ResourceBundle localeBundle = ResourceBundle.getBundle(
+                main.getBaseResourceBundle().getBaseBundleName(),
+                locale);
+
+        filterTableLabel.setText(localeBundle.getString("label.filterTableLabel.text"));
+        commandLabel.setText(localeBundle.getString("label.commandLabel.text"));
+        argumentLabel.setText(localeBundle.getString("label.argumentLabel.text"));
+        elementLabel.setText(localeBundle.getString("label.elementLabel.text"));
+        resultLabel.setText(localeBundle.getString("label.resultLabel.text"));
+
+        filterField.setPromptText(localeBundle.getString("textField.filterField.promptText"));
+
+        visualizeCollectionButton.setText(localeBundle.getString("button.visualizeCollectionButton.text"));
+        editChosenElementButton.setText(localeBundle.getString("button.editChosenElementButton.text"));
+        removeChosenElementButton.setText(localeBundle.getString("button.removeChosenElementButton.text"));
+        submitButton.setText(localeBundle.getString("button.submitButton.text"));
+        createMusicBandButton.setText(localeBundle.getString("button.createMusicBandButton.text"));
+
+
+
+// TODO: 29.08.2020  
+    }
+
+
 //----------------------------------------------------------------------------------------------------------------------
 
 
@@ -1035,5 +1177,6 @@ public class CollectionOverviewController {
     public void setNullSymbol(String nullSymbol) {
         this.nullSymbol = nullSymbol;
     }
+
 
 }

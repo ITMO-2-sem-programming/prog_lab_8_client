@@ -1,5 +1,7 @@
 package ru.itmo.core.common.classes;
 
+import org.omg.CORBA.Object;
+
 import java.io.Serializable;
 import java.util.HashMap;
 

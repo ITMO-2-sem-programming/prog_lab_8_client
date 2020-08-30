@@ -12,9 +12,11 @@ import javafx.stage.Stage;
 import ru.itmo.UI.Main;
 import ru.itmo.core.common.classes.*;
 
+import java.util.Locale;
 
 
-public class EditMusicBandDialogController {
+public class EditMusicBandDialogController
+        implements Localizable {
 
 
     private String nullSymbol
@@ -462,6 +464,11 @@ public class EditMusicBandDialogController {
         else return object.toString();
     }
 
+
+    @Override
+    public void localize(Locale locale) {
+// TODO: 29.08.2020
+    }
 
 
 //----------------------------------------------------------------------------------------------------------------------

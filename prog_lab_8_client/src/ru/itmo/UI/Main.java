@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import resourses.locale.locale;
 import ru.itmo.UI.controller.*;
 import ru.itmo.core.common.classes.*;
 import ru.itmo.core.common.exchange.request.clientRequest.serviceRequest.LoadCollectionServiceRequest;
@@ -14,12 +15,16 @@ import ru.itmo.core.common.exchange.request.clientRequest.serviceRequest.LoadOwn
 import java.io.IOException;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.ResourceBundle;
 
 
 public class Main extends Application {
 
 
     Client client;
+    
+    private final ResourceBundle baseResourceBundle
+            = ResourceBundle.getBundle("resourses.locale.locale");
 
 
     private ObservableList<MusicBand> collection
@@ -395,6 +400,11 @@ public class Main extends Application {
 
 
     // Other staff
+
+
+    public ResourceBundle getBaseResourceBundle() {
+        return baseResourceBundle;
+    }
 
     public ObservableList<MusicBand> getCollection() {
         return collection;
